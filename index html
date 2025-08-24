@@ -7,38 +7,35 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f4f4f4;
-      color: #222;
+      background: #0d1117;
+      color: #f0f6fc;
       text-align: center;
       padding: 40px;
     }
-    h1 {
-      color: #222;
-    }
+    h1 { color: #58a6ff; }
     .btn {
-      display: inline-block;
-      margin: 12px;
-      padding: 12px 24px;
+      display: block;
+      margin: 15px auto;
+      padding: 14px 28px;
       font-size: 18px;
       border-radius: 8px;
       text-decoration: none;
       color: white;
-      font-weight: bold;
+      width: 250px;
     }
-    .btn-prob { background: #007bff; }     /* mėlynas */
-    .btn-risk { background: #28a745; }     /* žalias */
-    .btn-mult { background: #ff5722; }     /* oranžinis */
-    .btn:hover {
-      filter: brightness(1.1);
-    }
+    .btn:hover { filter: brightness(1.1); }
+    .btn-prob { background: #007bff; }
+    .btn-risk { background: #28a745; }
+    .btn-mult { background: #ff5722; }
   </style>
 </head>
 <body>
-  <h1>🦅 Supermažylio laboratorija</h1>
+  <h1>🧮 Supermažylio laboratorija</h1>
   <p>Pasirink skaičiuotuvą:</p>
 
-  <a href="prob.html" class="btn btn-prob">🎯 Greitas konverteris</a><br>
-  <a href="risk.html" class="btn btn-risk">⚖️ Rizikos modulis</a><br>
-  <a href="multiple.html" class="btn btn-mult">➕ Multiple modulis</a>
+  <a href="https://deividassimkus101-png.github.io/Supermazylis-lab/prob.html" class="btn btn-prob">🎯 Greitas konverteris</a>
+  <a href="https://deividassimkus101-png.github.io/Supermazylis-lab/risk.html" class="btn btn-risk">⚖️ Rizikos modulis</a>
+  <a href="https://deividassimkus101-png.github.io/Supermazylis-lab/multiple.html" class="btn btn-mult">🧩 Multiple statymai</a>
+
 </body>
 </html>
