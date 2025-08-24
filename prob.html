@@ -4,6 +4,8 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Mažylio konverteris – prob.html</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0e1116">
 <style>
   :root{
     --bg:#0e1116; --ink:#e8eef5; --mut:#90a4ae;
@@ -33,7 +35,7 @@
 <body>
 <header>
   <h1>🎯 Mažylio Greitas konverteris</h1>
-  <p class="note">Konvertuok koefus, gauk Kelly + rizikos patikrą, veski žurnalą ir net <b>užfiksuok realų win/loss</b> čia pat – grafikas atsinaujina automatiškai.</p>
+  <p class="note">Konvertuok koefus, gauk Kelly + rizikos patikrą, žurnalą ir <b>užfiksuok realų win/loss</b>. Grafikas atsinaujina automatiškai. Veikia kaip APP.</p>
 </header>
 
 <main>
@@ -53,7 +55,7 @@
     </table>
   </section>
 
-  <!-- 2. Kelly + Rizikos patikra -->
+  <!-- 2. Kelly + Rizika -->
   <section class="card">
     <div style="display:grid;gap:10px;grid-template-columns:1fr 1fr 1fr 1fr">
       <div>
@@ -86,7 +88,7 @@
     <div id="kpi" class="note"></div>
   </section>
 
-  <!-- 3. Žurnalas + CSV -->
+  <!-- 3. Žurnalas -->
   <section class="card">
     <h3 style="margin:0 0 6px">📒 Žurnalas (planavimas)</h3>
     <div class="btn-row">
@@ -104,7 +106,7 @@
     <p class="note">Pastaba: čia – planavimo žurnalas. Žemiau – realių rezultatų fiksavimas.</p>
   </section>
 
-  <!-- 4. GREITAS REALAUS REZULTATO FIKSAVIMAS (rašoma į rizikos saugyklą + grafikas atsinaujina) -->
+  <!-- 4. Greitas realaus rezultato fiksavimas -->
   <section class="card">
     <h3 style="margin:0 0 6px">✅ Greitas rezultato fiksavimas (win/loss)</h3>
     <div style="display:grid;gap:10px;grid-template-columns:1fr 1fr 1fr 1fr">
@@ -131,7 +133,7 @@
     <p class="note" id="rMsg"></p>
   </section>
 
-  <!-- 5. 📈 Realaus P&L grafikas (iš Risk log'o) -->
+  <!-- 5. 📈 Realaus P&L grafikas -->
   <section class="card">
     <h3 style="margin:0 0 6px">📈 Realaus P&L grafikas</h3>
     <div class="btn-row">
@@ -162,17 +164,14 @@ function download(name, text){
 
 /*** 1) KONVERTERIS ***/
 let lastCalc = null;
-
 function parseOdds(){
   const parts = ($('odds').value||'').split(',').map(s=>parseFloat(s.trim())).filter(x=>x>1.0001);
   if(parts.length<2){ tbl.style.display='none'; lastCalc=null; return {odds:[]}; }
-
   const implied=parts.map(o=>1/o);
   const sumImp=implied.reduce((a,b)=>a+b,0);
   const norm=sumImp>0?1/sumImp:0;
   const fairP=implied.map(p=>p*norm);
   const fairOdds=fairP.map(p=>1/p);
-
   tbody.innerHTML='';
   parts.forEach((o,i)=>{
     const hasValue = o>fairOdds[i];
@@ -190,14 +189,12 @@ function parseOdds(){
     `;
     tbody.appendChild(tr);
   });
-  tbl.style.display='';
-  lastCalc = {odds:parts, fairOdds, fairP};
+  tbl.style.display=''; lastCalc = {odds:parts, fairOdds, fairP};
   $('addlog').disabled = true;
 }
 
 /*** 2) KELLY + RIZIKA ***/
 let lastKelly = null;
-
 function kelly(){
   if(!lastCalc || !lastCalc.odds.length){ $('kpi').textContent='Pirmiausia paskaičiuok kairėje (Skaičiuoti).'; return; }
   const i=clamp(parseInt($('idx').value)-1,0,lastCalc.odds.length-1);
@@ -206,19 +203,15 @@ function kelly(){
   const bank=Math.max(0,parseFloat($('bank').value)||0);
   const frac=parseFloat($('frac').value)||0;
   if(!pUser){ $('kpi').textContent='Įvesk savo tikimybę p (%).'; return; }
-
   const fStar=(((o-1)*pUser)-(1-pUser))/(o-1);
   const stake=Math.max(0,fStar)*bank*frac;
   const evPerEuro=pUser*(o-1)-(1-pUser);
   const decisionHtml=evPerEuro>0?'<span class="pill good">Laimės (ilgainiui)</span>':'<span class="pill bad">Nelaimės (ilgainiui)</span>';
-
   $('kpi').innerHTML=`
     Pasirinkimas #${i+1}, koef.=${o.toFixed(2)}<br>
     Kelly f*=${fStar.toFixed(4)} → statymas ≈ ${stake.toFixed(2)} € iš bankrolas ${bank.toFixed(2)} €<br>
     EV/€=${evPerEuro.toFixed(4)} → Sprendimas: ${decisionHtml}
   `;
-
-  // Rizikos patikra (skaito RISK_KEY)
   try{
     const raw = localStorage.getItem(RISK_KEY);
     if(raw){
@@ -227,7 +220,6 @@ function kelly(){
       const dayStop = -(d.bank * (d.dloss/100));
       const weekStop= -(d.bank * (d.wloss/100));
       const hitStop = (d.dayPL <= dayStop) || (d.weekPL <= weekStop);
-
       let html = `<br><b>🛡️ Rizikos patikra:</b> max pagal cap (${d.cap.toFixed(2)}%) = <b>€ ${capMax.toFixed(2)}</b>. `;
       html += stake > capMax
         ? `<span style="color:#e57373">⚠️ Viršija cap – mažink iki € ${capMax.toFixed(2)}.</span>`
@@ -242,15 +234,11 @@ function kelly(){
         `<br><span style="color:#90a4ae">ℹ️ Patogu: atsidaryk <a href="risk.html">Rizikos modulį</a> ir nustatyk bankrolą bei cap – tuomet čia matysi cap patikrą.</span>`);
     }
   }catch(e){}
-
-  lastKelly = {
-    idx: i+1, o, pUser, bank, frac, fStar, stake, evPerEuro,
-    decisionText: evPerEuro>0 ? 'STATYTI' : 'NESTATYTI'
-  };
+  lastKelly = { idx: i+1, o, pUser, bank, frac, fStar, stake, evPerEuro, decisionText: evPerEuro>0 ? 'STATYTI' : 'NESTATYTI' };
   $('addlog').disabled = false;
 }
 
-/*** 3) ŽURNALAS + CSV (planavimo) ***/
+/*** 3) ŽURNALAS + CSV ***/
 function loadLog(){ try{return JSON.parse(localStorage.getItem(LOG_KEY)||'[]');}catch(e){return [];} }
 function saveLog(rows){ localStorage.setItem(LOG_KEY, JSON.stringify(rows)); }
 function renderLog(){
@@ -272,7 +260,6 @@ function renderLog(){
   });
   $('#logtbl').style.display = rows.length ? 'table' : 'none';
 }
-
 function addToLog(){
   if(!lastCalc || !lastKelly){ alert('Pirmiausia paskaičiuok Kelly.'); return; }
   const implied = 1/lastKelly.o;
@@ -290,7 +277,6 @@ function addToLog(){
   };
   const rows = loadLog(); rows.push(row); saveLog(rows); renderLog();
 }
-
 function toCSV(){
   const rows=loadLog();
   const header=['time','market','pick','odd','p','edge','ev_per_euro','kelly_eur','decision'];
@@ -306,106 +292,71 @@ function toCSV(){
   return lines.join('\n');
 }
 
-/*** 4) Greitas REALAUS REZULTATO fiksavimas → rašo į RISK_KEY ir atnaujina grafiką ***/
+/*** 4) Greitas realaus rezultato fiksavimas → RISK_KEY ***/
 function loadRisk(){
-  try{
-    const raw=localStorage.getItem(RISK_KEY);
-    if(!raw) return null;
-    return JSON.parse(raw);
-  }catch(e){ return null; }
+  try{ const raw=localStorage.getItem(RISK_KEY); return raw?JSON.parse(raw):null; }catch(e){ return null; }
 }
-function saveRisk(d){
-  localStorage.setItem(RISK_KEY, JSON.stringify(d));
-}
+function saveRisk(d){ localStorage.setItem(RISK_KEY, JSON.stringify(d)); }
 function ensureRiskDefaults(d){
   if(!d) d={};
-  d.bank = +d.bank || 1000;
-  d.cap  = +d.cap  || 1.0;
-  d.dloss= +d.dloss|| 3.0;
-  d.wloss= +d.wloss|| 7.0;
+  d.bank = +d.bank || 1000; d.cap = +d.cap || 1.0; d.dloss = +d.dloss || 3.0; d.wloss = +d.wloss || 7.0;
   d.wstart = d.wstart || new Date().toISOString().slice(0,10);
-  d.dayPL = +d.dayPL || 0;
-  d.weekPL= +d.weekPL|| 0;
+  d.dayPL = +d.dayPL || 0; d.weekPL = +d.weekPL || 0;
   d.log = Array.isArray(d.log) ? d.log : [];
   return d;
 }
 function addResult(){
-  const S = +$('rStake').value || 0;
-  const o = +$('rOdd').value || 0;
-  const res = $('rRes').value;
-  let pl=0;
-  if(res==='win') pl=S*(o-1);
-  if(res==='loss') pl=-S;
-  if(res==='void') pl=0;
-
+  const S = +$('rStake').value || 0, o = +$('rOdd').value || 0, res = $('rRes').value;
+  let pl=0; if(res==='win') pl=S*(o-1); if(res==='loss') pl=-S; if(res==='void') pl=0;
   let d = ensureRiskDefaults(loadRisk());
-  d.dayPL += pl;
-  d.weekPL += pl;
-  d.log.push({ t: new Date().toLocaleString(), S, o, res, pl });
-
+  d.dayPL += pl; d.weekPL += pl; d.log.push({ t: new Date().toLocaleString(), S, o, res, pl });
   saveRisk(d);
   $('rMsg').textContent = `Įrašyta: ${res.toUpperCase()} • P&L ${pl>=0?'+':''}${pl.toFixed(2)} €`;
-  renderPL(); // iškart atnaujinam grafiką
+  renderPL();
 }
 
-/*** 5) 📈 P&L grafikas iš RISK_KEY ***/
-function getRiskLog(){
-  const d = loadRisk();
-  return (d && Array.isArray(d.log)) ? d.log : [];
-}
+/*** 5) P&L grafikas ***/
+function getRiskLog(){ const d = loadRisk(); return (d && Array.isArray(d.log)) ? d.log : []; }
 function renderPL(){
-  const svg = document.getElementById('plChart');
-  const note = document.getElementById('plNote');
+  const svg = document.getElementById('plChart'), note = document.getElementById('plNote');
   if(!svg) return;
-
-  const log = getRiskLog();
-  svg.innerHTML = '';
-  if(!log.length){
-    if(note) note.innerHTML = 'Nėra įrašų. Užfiksuok rezultatą aukščiau ir atnaujink grafiką.';
-    return;
-  }
+  const log = getRiskLog(); svg.innerHTML = '';
+  if(!log.length){ if(note) note.innerHTML = 'Nėra įrašų. Užfiksuok rezultatą aukščiau ir atnaujink grafiką.'; return; }
   const rows = log.slice().sort((a,b)=> new Date(a.t) - new Date(b.t));
-
   const xs=[], ys=[]; let sum=0;
   rows.forEach((r,idx)=>{ sum += (+r.pl||0); xs.push(idx); ys.push(sum); });
-
   const W=600, H=240, pad=28;
   const minY = Math.min(0, ...ys), maxY = Math.max(0, ...ys);
-  const spanY = (maxY - minY) || 1;
-  const spanX = Math.max(1, xs.length-1);
+  const spanY = (maxY - minY) || 1, spanX = Math.max(1, xs.length-1);
   const X = i => pad + (i/spanX)*(W-2*pad);
   const Y = v => H-pad - ((v-minY)/spanY)*(H-2*pad);
-
   const zeroY = Y(0);
   svg.insertAdjacentHTML('beforeend', `<line x1="${pad}" y1="${zeroY}" x2="${W-pad}" y2="${zeroY}" stroke="#2a3b52" stroke-dasharray="4 4"/>`);
   svg.insertAdjacentHTML('beforeend', `<rect x="0" y="0" width="${W}" height="${H}" fill="none"/>`);
-
-  let dPath='';
-  xs.forEach((x,i)=>{ const px=X(x), py=Y(ys[i]); dPath += (i?'L':'M')+px+' '+py+' '; });
+  let dPath=''; xs.forEach((x,i)=>{ const px=X(x), py=Y(ys[i]); dPath += (i?'L':'M')+px+' '+py+' '; });
   svg.insertAdjacentHTML('beforeend', `<path d="${dPath}" fill="none" stroke="#13c2a3" stroke-width="2.2"/>`);
-
   const lastX = X(xs[xs.length-1]), lastY = Y(ys[ys.length-1]);
   svg.insertAdjacentHTML('beforeend', `<circle cx="${lastX}" cy="${lastY}" r="3.5" fill="#13c2a3"/>`);
-
   const lbl = v => '€ '+v.toFixed(2);
   svg.insertAdjacentHTML('beforeend', `<text x="${pad}" y="${Y(maxY)-6}" fill="#90a4ae" font-size="11">${lbl(maxY)}</text>`);
   svg.insertAdjacentHTML('beforeend', `<text x="${pad}" y="${Y(minY)+12}" fill="#90a4ae" font-size="11">${lbl(minY)}</text>`);
   svg.insertAdjacentHTML('beforeend', `<text x="${lastX+6}" y="${lastY-6}" fill="#e8eef5" font-size="12" font-weight="700">${lbl(ys[ys.length-1])}</text>`);
-
-  if(note) note.innerHTML = `Įrašai: ${rows.length} • Paskutinis P&L: <b>€ ${ys[ys.length-1].toFixed(2)}</b>`;
 }
 
-/*** EVENTAI ***/
+/*** EVENTAI + SW ***/
 $('calc').addEventListener('click',parseOdds);
 $('kgo').addEventListener('click',kelly);
 $('addlog').addEventListener('click',addToLog);
 $('dlcsv').addEventListener('click',()=>download('mazylis_log.csv',toCSV()));
 $('clear').addEventListener('click',()=>{ if(confirm('Išvalyti žurnalą?')){ localStorage.setItem(LOG_KEY,'[]'); renderLog(); } });
-
 $('rCommit').addEventListener('click',addResult);
 $('refreshPL').addEventListener('click',renderPL);
 
 renderLog();
+
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
 </script>
 </body>
-</html>
+  </html>
