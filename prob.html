@@ -31,7 +31,7 @@
 <body>
 <header>
   <h1>🎯 Mažylio Greitas konverteris</h1>
-  <p class="note">Įvesk koeficientus ir savo p – pamatysi VALUE, sprendimą ir Kelly statymą.</p>
+  <p class="note">Įvesk koeficientus ir savo p – pamatysi VALUE, sprendimą, Kelly statymą ir rizikos patikrą.</p>
 </header>
 
 <main>
@@ -127,13 +127,37 @@ function kelly(){
 
   $('kpi').innerHTML=`
     Pasirinkimas #${i+1}, koef.=${o.toFixed(2)}<br>
-    Kelly f*=${fStar.toFixed(4)} → statymas ≈ ${stake.toFixed(2)} € iš ${bank.toFixed(2)} €<br>
+    Kelly f*=${fStar.toFixed(4)} → statymas ≈ ${stake.toFixed(2)} € iš bankrolas ${bank.toFixed(2)} €<br>
     EV/€=${evPerEuro.toFixed(4)} → Sprendimas: ${decision}
   `;
+
+  // --- Rizikos patikra iš risk.html localStorage ---
+  try{
+    const raw = localStorage.getItem('mazylis_risk_v1');
+    if(raw){
+      const d = JSON.parse(raw);
+      const capMax = d.bank * (d.cap/100);
+      const dayStop = -(d.bank * (d.dloss/100));
+      const weekStop= -(d.bank * (d.wloss/100));
+      const hitStop = (d.dayPL <= dayStop) || (d.weekPL <= weekStop);
+
+      let html = `<br><b>🛡️ Rizikos patikra:</b> max pagal cap (${d.cap.toFixed(2)}%) = <b>€ ${capMax.toFixed(2)}</b>. `;
+      if(stake > capMax){
+        html += `<span style="color:#e57373">⚠️ Viršija cap – mažink iki € ${capMax.toFixed(2)}.</span>`;
+      } else {
+        html += `<span style="color:#2ecc71">✅ Sutelpa į cap.</span>`;
+      }
+      if(hitStop){
+        html += `<br><span style="color:#e57373;font-weight:700">🛑 STOP – pasiekta dienos/savaitės riba.</span>`;
+      }
+      html += `<br><a href="risk.html" style="display:inline-block;margin-top:6px;padding:8px 12px;background:#223041;border-radius:8px;color:#e8eef5;text-decoration:none">🔍 Patikrinti rizikos modulyje</a>`;
+      $('kpi').insertAdjacentHTML('beforeend', html);
+    }
+  }catch(e){}
 }
 
 $('calc').addEventListener('click',parseOdds);
 $('kgo').addEventListener('click',kelly);
 </script>
 </body>
-  </html>
+</html>
