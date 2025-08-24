@@ -1,8 +1,17 @@
-<!doctype html>
-<meta charset="utf-8">
-<title>Supermazylis-lab</title>
-<h1>Supermazylis-lab</h1>
-<p><a href="prob.html">➡️ Greitas konverteris</a></p>
-<p><a href="risk.html">➡️ Rizikos modulis</a></p>
-<p><a href="multiple.html">➡️ Multiple (kombinuoti)</a></p>
-<p style="color:#666">Jei šito nematai – vis dar cache. Tada pridėk ?v=2 prie adreso.</p>
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Supermazylis meniu</title>
+</head>
+<body>
+  <h1>🦅 Supermažylio laboratorija</h1>
+  <p>Pasirink modulį:</p>
+  <ul>
+    <li><a href="prob.html">🎯 Greitas konverteris (prob.html)</a></li>
+    <li><a href="risk.html">⚖️ Rizikos modulis (risk.html)</a></li>
+    <li><a href="multiple.html">➕ Kombinuotas statymas (multiple.html)</a></li>
+  </ul>
+</body>
+</html>
