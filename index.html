@@ -1,40 +1,51 @@
 <!DOCTYPE html>
 <html lang="lt">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Supermažylio meniu ⚗️</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #0d1117;
-      color: #f0f6fc;
-      text-align: center;
-      padding: 40px;
-    }
-    h1 {
-      color: #58a6ff;
-    }
-    a {
-      display: inline-block;
-      margin: 10px;
-      padding: 12px 20px;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: bold;
-    }
-    .btn-prob { background:#007bff; color:#fff; }
-    .btn-risk { background:#28a745; color:#fff; }
-    .btn-mult { background:#ff5722; color:#fff; }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>Supermažylis – laboratorija</title>
+<style>
+:root{
+  --bg:#0d1117;
+  --ink:#e6edf3;
+  --muted:#9fb0c3;
+  --card:#161b22;
+  --field:#0f1620;
+  --border:#263142;
+  --blue:#3b82f6;
+  --green:#22c55e;
+  --orange:#f97316;
+  --cyan:#06b6d4;
+  --bad:#ef4444;
+}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.5 system-ui,Segoe UI,Roboto,Ubuntu;color:var(--ink);background:var(--bg)}
+.wrap{max-width:860px;margin:0 auto;padding:28px;text-align:center}
+h1{margin:0 0 20px;font-size:clamp(1.8rem,4vw,2.6rem)}
+.lead{color:var(--muted);margin:0 0 18px}
+.btn{display:block;text-decoration:none;text-align:center;
+     margin:10px auto;padding:14px 20px;border-radius:14px;border:1px solid var(--border);
+     font-weight:800;max-width:300px}
+.btn:hover{filter:brightness(1.07)}
+.btn-blue{background:var(--blue);color:#061325}
+.btn-green{background:var(--green);color:#04150b}
+.btn-orange{background:var(--orange);color:#1b0b03}
+.btn-cyan{background:var(--cyan);color:#031316}
+</style>
 </head>
 <body>
-  <h1>⚗️ Supermažylio laboratorija</h1>
-  <p>Pasirink skaičiuotuvą:</p>
+  <div class="wrap">
+    <h1>🦅 Supermažylio laboratorija</h1>
+    <p class="lead">Pasirink modulį:</p>
 
-  <a class="btn-prob" href="https://deividassimkus101-png.github.io/Supermazylis-lab/prob.html">🎯 Greitas konverteris</a><br>
-  <a class="btn-risk" href="https://deividassimkus101-png.github.io/Supermazylis-lab/risk.html">⚖️ Rizikos modulis</a><br>
-  <a class="btn-mult" href="https://deividassimkus101-png.github.io/Supermazylis-lab/multiple.html">🧩 Multiple statymai</a>
+    <a class="btn btn-blue" href="prob.html">🎯 Greitas konverteris</a>
+    <a class="btn btn-green" href="risk.html">⚖️ Rizikos modulis</a>
+    <a class="btn btn-orange" href="multiple.html">📊 Multiple statymai</a>
 
+    <a class="btn btn-blue" href="ev.html">📈 EV / ROI analizė</a>
+    <a class="btn btn-green" href="history.html">📒 Statymų istorija</a>
+    <a class="btn btn-orange" href="arb.html">🧮 Arbitražo tikrintuvas</a>
+    <a class="btn btn-cyan" href="mc.html">🎲 Monte Carlo sim.</a>
+  </div>
 </body>
 </html>
