@@ -1,33 +1,49 @@
 <!DOCTYPE html>
 <html lang="lt">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Super Mažylis – laboratorija</title>
 <style>
+  :root{
+    --bg:#0e1116; --ink:#e8eef5; --mut:#90a4ae;
+    --card:#131a21; --edge:#1e2a38; --btn:#0dbf9b; --btn-ink:#07211c;
+  }
+  *{box-sizing:border-box}
   body{
-    margin:0; font:16px/1.6 system-ui, sans-serif;
-    background:#0e1116; color:#e8eef5;
-    display:flex; justify-content:center; align-items:center;
-    min-height:100vh; text-align:center; flex-direction:column;
+    margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
+    background:var(--bg); color:var(--ink); font:16px/1.6 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu;
+    padding:20px;
   }
-  h1{font-size:1.8rem; margin-bottom:10px;}
-  p{color:#90a4ae; margin-bottom:30px;}
-  a{
-    display:inline-block; padding:14px 24px;
-    background:#0dbf9b; color:#07211c; font-weight:700;
-    border-radius:12px; text-decoration:none; transition:.2s;
+  .wrap{
+    width:100%; max-width:780px; text-align:center; background:var(--card);
+    border:1px solid var(--edge); border-radius:16px; padding:22px;
+    box-shadow:0 12px 28px rgba(0,0,0,.35);
   }
-  a:hover{background:#11d6ae;}
-  footer{margin-top:40px; font-size:.9rem; color:#90a4ae;}
+  h1{margin:0 0 8px; font-size:clamp(1.4rem,3.5vw,2.1rem)}
+  p{margin:0 0 18px; color:var(--mut)}
+  .btns{display:flex; gap:12px; flex-wrap:wrap; justify-content:center}
+  a.btn{
+    display:inline-block; padding:14px 20px; border-radius:12px; text-decoration:none; font-weight:700;
+    background:var(--btn); color:var(--btn-ink); border:0;
+  }
+  .alt{
+    background:#223041; color:#e8eef5;
+  }
+  footer{margin-top:16px; font-size:.9rem; color:var(--mut)}
 </style>
 </head>
 <body>
-  <h1>🧪 Sveikas atvykęs į Super Mažylio laboratoriją!</h1>
-  <p>Čia rasi mūsų įrankius ir skaičiuotuvus.</p>
+  <div class="wrap">
+    <h1>🧪 Super Mažylio laboratorija</h1>
+    <p>Pasirink įrankį. Dirbam pamažu, stabiliai, su rizikos saugikliais.</p>
 
-  <a href="prob.html">🚀 Atidaryti Greitą konverterį</a>
+    <div class="btns">
+      <a class="btn" href="prob.html">🚀 Greitas konverteris (PROD)</a>
+      <a class="btn alt" href="risk.html">🛡️ Rizikos modulis</a>
+    </div>
 
-  <footer>© 2025 SuperMažylis Lab</footer>
+    <footer>© 2025 SuperMažylis Lab • v1 bazė • BETA moduliai atsiras vėliau</footer>
+  </div>
 </body>
 </html>
