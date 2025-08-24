@@ -1,251 +1,55 @@
 <!DOCTYPE html>
 <html lang="lt">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Rizikos modulis – Mažylis</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Super Mažylis – laboratorija</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0e1116">
 <style>
-:root{--bg:#0e1116;--ink:#e8eef5;--mut:#90a4ae;--card:#131a21;--edge:#1e2a38;--ok:#2ecc71;--bad:#e57373;--warn:#f9a825;--btn:#0dbf9b;--btn-ink:#07211c}
-*{box-sizing:border-box}body{margin:0;font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto;background:var(--bg);color:var(--ink);padding:16px}
-header,main{max-width:980px;margin:0 auto}
-h1{margin:0 0 6px;font-size:clamp(1.3rem,3vw,1.9rem)}.mut{color:var(--mut)}
-.card{background:var(--card);border:1px solid var(--edge);border-radius:14px;padding:14px;margin:10px 0;box-shadow:0 6px 14px rgba(0,0,0,.25)}
-.grid{display:grid;gap:12px}.g2{grid-template-columns:1fr}.g3{grid-template-columns:1fr}
-@media(min-width:820px){.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:1fr 1fr 1fr}}
-label{display:block;margin:6px 0 4px;color:var(--mut)}
-input,select{width:100%;padding:10px;border-radius:10px;background:#101821;color:var(--ink);border:1px solid #263445}
-button{padding:10px 14px;border-radius:10px;background:var(--btn);color:var(--btn-ink);font-weight:700;border:0;cursor:pointer}
-.kpi{display:flex;gap:10px;flex-wrap:wrap}
-.badge{display:inline-block;padding:6px 10px;border-radius:10px;font-weight:700}
-.good{background:rgba(46,204,113,.15);color:var(--ok);border:1px solid rgba(46,204,113,.35)}
-.warn{background:rgba(249,168,37,.12);color:var(--warn);border:1px solid rgba(249,168,37,.35)}
-.bad{background:rgba(229,115,115,.12);color:var(--bad);border:1px solid rgba(229,115,115,.35)}
-.stop{border:2px solid var(--bad);background:rgba(229,115,115,.1);padding:10px;border-radius:12px;font-weight:800;text-align:center}
-table{width:100%;border-collapse:collapse;margin-top:10px}
-th,td{padding:8px;border-bottom:1px solid #223140;text-align:right}
-th:first-child,td:first-child{text-align:left}
-th{color:var(--mut)}
-.small{font-size:.92rem;color:var(--mut)}
+  :root{
+    --bg:#0e1116; --ink:#e8eef5; --mut:#90a4ae;
+    --card:#131a21; --edge:#1e2a38; --btn:#0dbf9b; --btn-ink:#07211c;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
+    background:var(--bg); color:var(--ink); font:16px/1.6 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu;
+    padding:20px;
+  }
+  .wrap{
+    width:100%; max-width:780px; text-align:center; background:var(--card);
+    border:1px solid var(--edge); border-radius:16px; padding:22px;
+    box-shadow:0 12px 28px rgba(0,0,0,.35);
+  }
+  h1{margin:0 0 8px; font-size:clamp(1.4rem,3.5vw,2.1rem)}
+  p{margin:0 0 18px; color:var(--mut)}
+  .btns{display:flex; gap:12px; flex-wrap:wrap; justify-content:center}
+  a.btn{
+    display:inline-block; padding:14px 20px; border-radius:12px; text-decoration:none; font-weight:700;
+    background:var(--btn); color:var(--btn-ink); border:0;
+  }
+  .alt{ background:#223041; color:#e8eef5; }
+  footer{margin-top:16px; font-size:.9rem; color:var(--mut)}
 </style>
 </head>
 <body>
-<header>
-  <h1>🛡️ Mažylio rizikos valdymas</h1>
-  <p class="mut">Tikslas – <b>apsaugoti bankrolą</b>. Sustojam, jei ribos pasiektos.</p>
-</header>
+  <div class="wrap">
+    <h1>🧪 Super Mažylio laboratorija</h1>
+    <p>Pasirink įrankį. Dirbam pamažu, stabiliai, su rizikos saugikliais.</p>
 
-<main>
-  <!-- 1) Nustatymai -->
-  <section class="card">
-    <h2 style="margin:0 0 8px">Nustatymai</h2>
-    <div class="grid g3">
-      <div>
-        <label>Pradinis / dabartinis bankrolas (€)</label>
-        <input id="bank" type="number" step="0.01" value="1000">
-      </div>
-      <div>
-        <label>Max statymas (% bankrolo)</label>
-        <input id="cap" type="number" step="0.1" value="1.0">
-      </div>
-      <div>
-        <label>Dienos STOP-LOSS (% bankrolo)</label>
-        <input id="dloss" type="number" step="0.1" value="3.0">
-      </div>
+    <div class="btns">
+      <a class="btn" href="prob.html">🚀 Greitas konverteris (PROD)</a>
+      <a class="btn alt" href="risk.html">🛡️ Rizikos modulis</a>
     </div>
-    <div class="grid g2">
-      <div>
-        <label>Savaitės STOP-LOSS (% bankrolo)</label>
-        <input id="wloss" type="number" step="0.1" value="7.0">
-      </div>
-      <div>
-        <label>Savaitės pradžios data</label>
-        <input id="wstart" type="date">
-      </div>
-    </div>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px">
-      <button id="save">💾 Išsaugoti</button>
-      <button id="reset">🧹 Išvalyti šiandienos P&L</button>
-    </div>
-    <p class="small">Pastaba: duomenys saugomi naršyklėje (localStorage). Jei keiti bankrolą – išsaugok.</p>
-  </section>
 
-  <!-- 2) Būsenos suvestinė -->
-  <section class="card">
-    <h2 style="margin:0 0 8px">Būsena</h2>
-    <div class="kpi" id="kpi"></div>
-    <div id="stop" class="stop" style="display:none">🛑 STOP – pasiekta riba. Nustok statyti iki rytojaus / kitos savaitės.</div>
-  </section>
-
-  <!-- 3) Statymo patikra prieš atlikimą -->
-  <section class="card">
-    <h2 style="margin:0 0 8px">Statymo patikra</h2>
-    <div class="grid g3">
-      <div>
-        <label>Planuojamas statymas (€)</label>
-        <input id="pstake" type="number" step="0.01" value="10">
-      </div>
-      <div>
-        <label>Koeficientas (decimal)</label>
-        <input id="podd" type="number" step="0.01" value="2.00">
-      </div>
-      <div>
-        <label>Tavo p (%)</label>
-        <input id="pp" type="number" step="0.1" value="50">
-      </div>
-    </div>
-    <button id="precheck">Patikrinti</button>
-    <div id="preout" class="small" style="margin-top:8px"></div>
-  </section>
-
-  <!-- 4) Užfiksuoti rezultatą (po įvykio) -->
-  <section class="card">
-    <h2 style="margin:0 0 8px">Užfiksuoti rezultatą</h2>
-    <div class="grid g3">
-      <div>
-        <label>Realus statymas (€)</label>
-        <input id="stake" type="number" step="0.01" value="10">
-      </div>
-      <div>
-        <label>Koeficientas</label>
-        <input id="odd" type="number" step="0.01" value="2.00">
-      </div>
-      <div>
-        <label>Rezultatas</label>
-        <select id="res">
-          <option value="win">Laimėjo</option>
-          <option value="loss">Pralaimėjo</option>
-          <option value="void">Void / grąžinta</option>
-        </select>
-      </div>
-    </div>
-    <button id="commit">Įrašyti P&L</button>
-
-    <table id="logtbl" style="display:none">
-      <thead><tr><th>Laikas</th><th>Statymas</th><th>Koef.</th><th>Rezultatas</th><th>P&L (€)</th></tr></thead>
-      <tbody></tbody>
-    </table>
-  </section>
-</main>
+    <footer>© 2025 SuperMažylis Lab • v1 bazė</footer>
+  </div>
 
 <script>
-const $=id=>document.getElementById(id);
-const LS='mazylis_risk_v1';
-
-function load(){
-  const d=JSON.parse(localStorage.getItem(LS)||'{}');
-  $('bank').value = d.bank ?? 1000;
-  $('cap').value  = d.cap  ?? 1.0;
-  $('dloss').value= d.dloss?? 3.0;
-  $('wloss').value= d.wloss?? 7.0;
-  $('wstart').value= d.wstart ?? isoMonday(new Date());
-  window.state = {
-    bank: +$('bank').value,
-    cap:  +$('cap').value/100,      // → frakcija
-    dloss:+$('dloss').value/100,
-    wloss:+$('wloss').value/100,
-    wstart:$('wstart').value,
-    dayPL: d.dayPL ?? 0,
-    weekPL: d.weekPL ?? 0,
-    log: d.log ?? []
-  };
-  render();
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
 }
-function save(){
-  const d={
-    bank:+$('bank').value,
-    cap:+$('cap').value,
-    dloss:+$('dloss').value,
-    wloss:+$('wloss').value,
-    wstart:$('wstart').value,
-    dayPL:state.dayPL,
-    weekPL:state.weekPL,
-    log:state.log
-  };
-  localStorage.setItem(LS,JSON.stringify(d));
-  load();
-}
-function isoMonday(date){
-  const d=new Date(date), day=(d.getDay()+6)%7;
-  d.setDate(d.getDate()-day); // atgal iki pirmadienio
-  return d.toISOString().slice(0,10);
-}
-function fmt(x){return '€ '+Number(x).toFixed(2)}
-function pct(x){return (x*100).toFixed(2)+'%'}
-
-function render(){
-  const k=$('kpi'); k.innerHTML='';
-  const maxStake=state.bank*state.cap;
-  const dStop=-(state.bank*state.dloss);
-  const wStop=-(state.bank*state.wloss);
-  const dLeft=dStop - state.dayPL; // dayPL neigiamas – artėjam prie dStop
-  const wLeft=wStop - state.weekPL;
-
-  const items=[];
-  items.push(badg('Bankrolas',fmt(state.bank),'good'));
-  items.push(badg('Max statymas',fmt(maxStake),'warn'));
-  items.push(badg('Dienos P&L',fmt(state.dayPL),(state.dayPL>=0?'good':'bad')));
-  items.push(badg('Savaitės P&L',fmt(state.weekPL),(state.weekPL>=0?'good':'bad')));
-  items.push(badg('Dienos STOP',pct(state.dloss),'warn'));
-  items.push(badg('Savaitės STOP',pct(state.wloss),'warn'));
-  items.push(badg('Likęs dienos „nuosmukio biudžetas“',fmt(Math.max(0,dLeft)),'bad'));
-  items.push(badg('Likęs savaitės „nuosmukio biudžetas“',fmt(Math.max(0,wLeft)),'bad'));
-  k.append(...items);
-
-  const stop = (state.dayPL<=dStop) || (state.weekPL<=wStop);
-  $('stop').style.display = stop ? '' : 'none';
-
-  // logas
-  const tb=$('#logtbl tbody'); tb.innerHTML='';
-  state.log.slice(-10).forEach(r=>{
-    const tr=document.createElement('tr');
-    tr.innerHTML=`<td>${r.t}</td><td>${fmt(r.S)}</td><td>${r.o.toFixed(2)}</td><td>${r.res}</td><td>${fmt(r.pl)}</td>`;
-    tb.appendChild(tr);
-  });
-  $('#logtbl').style.display = state.log.length? 'table':'none';
-}
-function badg(name,val,cls){
-  const s=document.createElement('span'); s.className='badge '+cls; s.innerHTML=`<b>${name}:</b> ${val}`; return s;
-}
-// Patikra prieš statymą
-$('precheck').onclick=()=>{
-  const S=+$('pstake').value||0, o=+$('podd').value||0, p=(+$('pp').value||0)/100;
-  const out=$('preout'); out.innerHTML='';
-  const maxStake=state.bank*state.cap;
-  const evPer = p*(o-1) - (1-p);
-  const kFull = (((o-1)*p)-(1-p))/(o-1);
-  const kUse = Math.max(0,kFull*0.5); // 50% Kelly rekomendacija
-  const kStake = state.bank * kUse;
-
-  const msgs=[];
-  msgs.push(`<b>EV/€:</b> ${(evPer>=0?'+':'')+evPer.toFixed(4)} ${evPer>0?'<span class="badge good">VALUE</span>':'<span class="badge bad">NE</span>'}`);
-  msgs.push(`<b>Kelly (pilnas):</b> ${(Math.max(0,kFull)*100).toFixed(2)}% → 50% Kelly ≈ ${fmt(kStake)}`);
-  msgs.push(`<b>Max statymas pagal cap:</b> ${fmt(maxStake)}`);
-  if(S>maxStake) msgs.push(`<span class="badge bad">⚠️ Statymas viršija ${($('cap').value)}% cap – mažink sumą.</span>`);
-  // stop check
-  const dStop=-(state.bank*state.dloss), wStop=-(state.bank*state.wloss);
-  if(state.dayPL<=dStop || state.weekPL<=wStop) msgs.push(`<span class="badge bad">🛑 STOP – riba pasiekta. Neleistina statyti šiandien/šią savaitę.</span>`);
-  out.innerHTML=msgs.join('<br>');
-};
-
-// Įrašyti P&L
-$('commit').onclick=()=>{
-  const S=+$('stake').value||0, o=+$('odd').value||0, res=$('res').value;
-  let pl=0;
-  if(res==='win') pl=S*(o-1);
-  if(res==='loss') pl=-S;
-  if(res==='void') pl=0;
-  state.dayPL += pl;
-  state.weekPL += pl;
-  state.log.push({t:new Date().toLocaleString(),S,o,res,pl});
-  save();
-};
-
-// Valdikliai
-$('save').onclick=save;
-$('reset').onclick=()=>{ state.dayPL=0; save(); };
-
-// Inicializacija
-let state={};
-load();
 </script>
 </body>
-                                     </html>
+</html>
