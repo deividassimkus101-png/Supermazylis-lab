@@ -33,7 +33,7 @@
 <body>
 <header>
   <h1>🎯 Mažylio Greitas konverteris</h1>
-  <p class="note">Įvesk koeficientus ir savo p – pamatysi VALUE, sprendimą, Kelly statymą, rizikos patikrą ir galėsi <b>vesti žurnalą</b> su CSV eksportu.</p>
+  <p class="note">Įvesk koeficientus ir savo p – pamatysi VALUE, sprendimą, Kelly statymą, rizikos patikrą ir galėsi vesti <b>žurnalą</b> su CSV. Apačioje – <b>realaus P&L grafikas</b> iš Rizikos modulio.</p>
 </header>
 
 <main>
@@ -103,6 +103,18 @@
     </table>
     <p class="note">Pastaba: čia – planavimo žurnalas. Realų P&L fiksuok <a href="risk.html">Rizikos modulyje</a>.</p>
   </section>
+
+  <!-- 4. 📈 Realaus P&L grafikas (iš Risk log'o) -->
+  <section class="card">
+    <h3 style="margin:0 0 6px">📈 Realaus P&L grafikas (iš Rizikos modulio)</h3>
+    <div class="btn-row">
+      <button id="refreshPL" class="ghost">🔄 Atnaujinti grafiką</button>
+    </div>
+    <div id="plWrap" style="margin-top:10px; background:#101821; border:1px solid #223140; border-radius:10px; padding:8px;">
+      <svg id="plChart" viewBox="0 0 600 240" preserveAspectRatio="none" style="width:100%; height:220px"></svg>
+      <div id="plNote" class="note">Atnaujink po to, kai <a href="risk.html">Rizikos modulyje</a> įrašai rezultatus.</div>
+    </div>
+  </section>
 </main>
 
 <script>
@@ -152,8 +164,7 @@ function parseOdds(){
   });
   tbl.style.display='';
   lastCalc = {odds:parts, fairOdds, fairP};
-  // kol nėra Kelly, draudžiam „Pridėti į žurnalą“
-  $('addlog').disabled = true;
+  $('addlog').disabled = true; // kol nėra Kelly
 }
 
 /*** 2) KELLY + RIZIKOS PATIKRA ***/
@@ -204,7 +215,6 @@ function kelly(){
     }
   }catch(e){}
 
-  // įsimenam Kelly rezultatą žurnalui
   lastKelly = {
     idx: i+1, o, pUser, bank, frac, fStar, stake, evPerEuro,
     decisionText: evPerEuro>0 ? 'STATYTI' : 'NESTATYTI'
@@ -241,7 +251,7 @@ function addToLog(){
   const edge = lastKelly.pUser - implied;
   const row = {
     ts: new Date().toISOString().slice(0,19).replace('T',' '),
-    market: '1Xn',         // gali pakeisti pagal situaciją
+    market: '1Xn',
     pick: lastKelly.idx,
     odd: lastKelly.o,
     p: lastKelly.pUser,
@@ -268,14 +278,76 @@ function toCSV(){
   return lines.join('\n');
 }
 
+/*** 4) 📈 P&L grafikas (skaito 'mazylis_risk_v1' iš risk.html) ***/
+(function(){
+  const svg = document.getElementById('plChart');
+  const note = document.getElementById('plNote');
+  const btn = document.getElementById('refreshPL');
+  if(!svg || !btn) return;
+
+  function getRiskLog(){
+    try{
+      const raw = localStorage.getItem('mazylis_risk_v1');
+      if(!raw) return [];
+      const d = JSON.parse(raw);
+      return Array.isArray(d.log) ? d.log : [];
+    }catch(e){ return []; }
+  }
+
+  function renderPL(){
+    const log = getRiskLog();
+    svg.innerHTML = '';
+    if(!log.length){
+      note.innerHTML = 'Nėra įrašų. Įrašyk rezultatus rizikos modulyje ir spausk „Atnaujinti grafiką“.';
+      return;
+    }
+    const rows = log.slice().sort((a,b)=> new Date(a.t) - new Date(b.t));
+
+    const xs = [], ys = [];
+    let sum = 0;
+    rows.forEach((r,idx)=>{ sum += (+r.pl||0); xs.push(idx); ys.push(sum); });
+
+    const W=600, H=240, pad=28;
+    const minY = Math.min(0, ...ys), maxY = Math.max(0, ...ys);
+    const spanY = (maxY - minY) || 1;
+    const spanX = Math.max(1, xs.length-1);
+
+    const X = i => pad + (i/spanX)*(W-2*pad);
+    const Y = v => H-pad - ((v-minY)/spanY)*(H-2*pad);
+
+    // 0 linija
+    const zeroY = Y(0);
+    svg.insertAdjacentHTML('beforeend',
+      `<line x1="${pad}" y1="${zeroY}" x2="${W-pad}" y2="${zeroY}" stroke="#2a3b52" stroke-dasharray="4 4"/>`);
+    svg.insertAdjacentHTML('beforeend', `<rect x="0" y="0" width="${W}" height="${H}" fill="none"/>`);
+
+    // linija
+    let d = '';
+    xs.forEach((x,i)=>{ const px=X(x), py=Y(ys[i]); d += (i?'L':'M')+px+' '+py+' '; });
+    svg.insertAdjacentHTML('beforeend', `<path d="${d}" fill="none" stroke="#13c2a3" stroke-width="2.2"/>`);
+
+    // paskutinis taškas
+    const lastX = X(xs[xs.length-1]), lastY = Y(ys[ys.length-1]);
+    svg.insertAdjacentHTML('beforeend', `<circle cx="${lastX}" cy="${lastY}" r="3.5" fill="#13c2a3"/>`);
+
+    // etiketės
+    const lbl = v => '€ '+v.toFixed(2);
+    svg.insertAdjacentHTML('beforeend', `<text x="${pad}" y="${Y(maxY)-6}" fill="#90a4ae" font-size="11">${lbl(maxY)}</text>`);
+    svg.insertAdjacentHTML('beforeend', `<text x="${pad}" y="${Y(minY)+12}" fill="#90a4ae" font-size="11">${lbl(minY)}</text>`);
+    svg.insertAdjacentHTML('beforeend', `<text x="${lastX+6}" y="${lastY-6}" fill="#e8eef5" font-size="12" font-weight="700">${lbl(ys[ys.length-1])}</text>`);
+
+    note.innerHTML = `Įrašai: ${rows.length} • Paskutinis P&L: <b>€ ${ys[ys.length-1].toFixed(2)}</b>`;
+  }
+
+  btn.addEventListener('click', renderPL);
+})();
+
 /*** EVENTAI ***/
 $('calc').addEventListener('click',parseOdds);
 $('kgo').addEventListener('click',kelly);
 $('addlog').addEventListener('click',addToLog);
 $('dlcsv').addEventListener('click',()=>download('mazylis_log.csv',toCSV()));
-$('clear').addEventListener('click',()=>{ if(confirm('Išvalyti žurnalą?')){ saveLog([]); renderLog(); } });
-
-/*** INIT ***/
+$('clear').addEventListener('click',()=>{ if(confirm('Išvalyti žurnalą?')){ localStorage.setItem(LOG_KEY,'[]'); renderLog(); } });
 renderLog();
 </script>
 </body>
