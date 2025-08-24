@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Lost Money Back – promo ir saugus atsistatymas</title>
+<style>
+:root{--bg:#0d1117;--ink:#e6edf3;--muted:#9fb0c3;--card:#161b22;--field:#0f1620;--border:#263142;--blue:#3b82f6;--green:#22c55e;--orange:#f97316;--bad:#ef4444}
+*{box-sizing:border-box} body{margin:0;font:16px/1.5 system-ui,Segoe UI,Roboto;color:var(--ink);background:var(--bg)}
+.wrap{max-width:900px;margin:0 auto;padding:28px}
+h1{margin:0 0 10px;font-size:clamp(1.6rem,3.8vw,2.4rem)} .lead{color:var(--muted);margin:0 0 16px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:16px}
+label{display:block;margin:10px 0 6px;color:var(--muted)}
+input,select{width:100%;padding:12px;border-radius:10px;border:1px solid var(--border);background:var(--field);color:var(--ink)}
+.row{display:grid;gap:14px;grid-template-columns:1fr 1fr} @media(max-width:760px){.row{grid-template-columns:1fr}}
+.btn{display:inline-block;text-decoration:none;text-align:center;padding:12px 18px;border-radius:12px;border:1px solid var(--border);font-weight:800;cursor:pointer}
+.btn:hover{filter:brightness(1.05)} .btn-blue{background:var(--blue);color:#061325}
+.out{margin-top:14px;padding:14px;border-radius:12px;background:var(--field);border:1px dashed var(--border)}
+.good{color:var(--green)} .bad{color:var(--bad)} .back{display:inline-block;margin-top:18px;color:#93c5fd}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🛡️ Lost Money Back</h1>
+  <p class="lead">Skaičiuok EV su „cashback/free-bet back“ ir, jei norėsi, apskaičiuok <b>konservatyvų</b> atsistatymo statymą (be Martingale).</p>
+
+  <!-- 1) PROMO EV -->
+  <div class="card">
+    <h3>1) Promo EV skaičiuoklė</h3>
+    <div class="row">
+      <div><label>Tavo tikimybė %</label><input id="p" type="number" placeholder="pvz.: 56"></div>
+      <div><label>Koeficientas</label><input id="o" type="number" placeholder="pvz.: 1.90"></div>
+    </div>
+    <div class="row">
+      <div><label>Suma (€)</label><input id="s" type="number" placeholder="pvz.: 20"></div>
+      <div>
+        <label>Grąžinimo tipas</label>
+        <select id="rtype">
+          <option value="cash">Cashback (grynais)</option>
+          <option value="freebet">Free bet (stake not returned)</option>
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div><label>Grąžinimo dalis r (pvz. 0.5 = 50%)</label><input id="r" type="number" step="0.01" placeholder="0.5"></div>
+      <div><label>Free bet konversija c (pvz. 0.7)</label><input id="c" type="number" step="0.01" placeholder="0.7"></div>
+    </div>
+    <button class="btn btn-blue" onclick="promo()">Skaičiuoti EV</button>
+    <div id="out1" class="out"></div>
+  </div>
+
+  <!-- 2) SAUGUS ATSISTATYMAS -->
+  <div class="card">
+    <h3>2) Konservatyvus atsistatymo planas</h3>
+    <div class="row">
+      <div><label>Praeitos dienos/serijos nuostolis L (€)</label><input id="L" type="number" placeholder="pvz.: 25"></div>
+      <div><label>Tikslo laukiamoji nauda T (€)</label><input id="T" type="number" placeholder="pvz.: 5"></div>
+    </div>
+    <div class="row">
+      <div><label>Max % nuo banko (pvz. 2)</label><input id="fmax" type="number" placeholder="2"></div>
+      <div><label>Bankroll (€)</label><input id="bank" type="number" placeholder="pvz.: 500"></div>
+    </div>
+    <button class="btn btn-blue" onclick="recover()">Siūlomas statymas</button>
+    <div id="out2" class="out"></div>
+  </div>
+
+  <a class="back" href="index.html">← grįžti į meniu</a>
+</div>
+
+<script>
+function F(x,n=2){return Number.isFinite(x)?(+x).toFixed(n):'-'}
+
+// 1) Promo EV
+function promo(){
+  const p = parseFloat(document.getElementById('p').value)/100;
+  const o = parseFloat(document.getElementById('o').value);
+  const s = parseFloat(document.getElementById('s').value);
+  const r = parseFloat(document.getElementById('r').value||0);
+  const c = parseFloat(document.getElementById('c').value||0.7);
+  const rt= document.getElementById('rtype').value;
+
+  if(!(p>0&&p<1&&o>1&&s>0)){out1.innerHTML='Patikrink įvestis.';return}
+  let EV;
+  if(rt==='cash'){ EV = p*(o-1)*s + (1-p)*(-s + r*s); }
+  else           { EV = p*(o-1)*s + (1-p)*(-s + r*s*c); }
+
+  const tag = EV>0 ? '<b class="good">+EV</b>' : '<b class="bad">-EV</b>';
+  out1.innerHTML = `EV: <b>${F(EV)} €</b> → ${tag}<br>
+                    Pastaba: free-bet atveju naudota konversija c=${F(c,2)}.`;
+}
+
+// 2) Saugus atsistatymas (be Martingale)
+function recover(){
+  const p = parseFloat(document.getElementById('p').value)/100;
+  const o = parseFloat(document.getElementById('o').value);
+  const T = parseFloat(document.getElementById('T').value||0);
+  const bank = parseFloat(document.getElementById('bank').value||0);
+  const fmax = parseFloat(document.getElementById('fmax').value||2)/100;
+
+  if(!(p>0&&p<1&&o>1)){out2.innerHTML='Įvesk p ir o (iš 1 dalies).';return}
+  if(p*o<=1){ out2.innerHTML='Tavo p·o ≤ 1 (ne +EV). Atsistatymo statymas nerekomenduojamas.'; return; }
+
+  const x = T / (p*o - 1);                       // tikslinis EV statymas
+  const cap = Math.max(0, Math.min(bank*fmax, x));
+  const warn = x>cap ? ' (apribota pagal max % nuo banko)' : '';
+  out2.innerHTML = `Siūlomas statymas x ≈ <b>${F(cap)} €</b>${warn}<br>
+                    Pastaba: tai <u>ne</u> Martingale. Jei p·o krenta žemiau 1 – atsistatymą stabdyti.`;
+}
+</script>
+</body>
+  </html>
