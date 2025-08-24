@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Arbitražo detektorius</title>
+<style>
+:root{--bg:#0d1117;--ink:#e6edf3;--muted:#9fb0c3;--card:#161b22;--field:#0f1620;--border:#263142;--orange:#f97316;--green:#22c55e;--bad:#ef4444}
+*{box-sizing:border-box}body{margin:0;font:16px/1.5 system-ui,Segoe UI,Roboto;color:var(--ink);background:var(--bg)}
+.wrap{max-width:860px;margin:0 auto;padding:28px}h1{margin:0 0 16px;font-size:clamp(1.6rem,3.8vw,2.4rem)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px}
+label{display:block;margin:12px 0 6px;color:var(--muted)}
+input{width:100%;padding:12px;border-radius:10px;border:1px solid var(--border);background:var(--field);color:var(--ink)}
+.btn{display:inline-block;text-decoration:none;text-align:center;padding:12px 18px;border-radius:12px;border:1px solid var(--border);font-weight:800;cursor:pointer}
+.btn:hover{filter:brightness(1.05)} .btn-orange{background:var(--orange);color:#1b0b03}
+.out{margin-top:16px;padding:14px;border-radius:12px;background:var(--field);border:1px dashed var(--border)}
+.good{color:var(--green)} .bad{color:var(--bad)} .back{display:inline-block;margin-top:20px;color:#93c5fd;text-decoration:none}.back:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🧮 Arbitražo detektorius</h1>
+  <div class="card">
+    <label>Koeficientai (kableliais) — 2 arba 3 baigtys</label>
+    <input id="odds" placeholder="pvz.: 2.10, 1.95 arba 2.60, 3.40, 3.40">
+    <label>Bendra suma (€)</label>
+    <input id="bank" type="number" placeholder="100">
+    <button class="btn btn-orange" onclick="check()">Tikrinti</button>
+    <div id="out" class="out"></div>
+  </div>
+  <a class="back" href="index.html">← grįžti į meniu</a>
+</div>
+<script>
+const out=document.getElementById('out');
+function f(x,n=2){return Number(x).toFixed(n)}
+function check(){
+  const arr=(odds.value||'').split(',').map(x=>+x.trim()).filter(x=>x>1);
+  const bank=+bank.value||100;
+  if(arr.length<2||arr.length>3){out.innerHTML='Įvesk 2 arba 3 koeficientus.';return}
+  const inv=arr.map(o=>1/o), S=inv.reduce((a,b)=>a+b,0), arb=S<1;
+  let html=`Σ(1/koef) = <b>${f(S,4)}</b> → ${arb?'<span class="good">YRA arbitražas</span>':'<span class="bad">Nėra arbitražo</span>'}<br>`;
+  if(arb){
+    const stakes=inv.map(x=>bank*x/S), garant=bank/S, prof=garant-bank;
+    html+=`Paskirstymas: ${stakes.map((s,i)=>`#${i+1} – <b>${f(s)}</b>€ (koef. ${arr[i]})`).join(', ')}<br>`;
+    html+=`Garant. grąža: <b>${f(garant)}</b>€ · Pelnas: <b>${f(prof)}</b>€ (${f((1/S-1)*100)}%)`;
+  } else { html+=`Kad būtų arbitražas, suma turi būti <b>&lt; 1.0000</b>.`; }
+  out.innerHTML=html;
+}
+</script>
+</body>
+</html>
