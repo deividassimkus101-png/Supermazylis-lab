@@ -1,38 +1,90 @@
 <!DOCTYPE html>
 <html lang="lt">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Rizikos modulis</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rizikos modulis</title>
+<style>
+:root{
+  --bg:#0b0f16; --card:#121826; --muted:#0f1b2c;
+  --ink:#e2e8f0; --sub:#94a3b8; --accent:#10b981; --warn:#f59e0b; --bad:#ef4444;
+}
+*{box-sizing:border-box}
+body{margin:0;padding:24px;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,Segoe UI,Roboto,Ubuntu}
+h1{margin:0 0 16px;font-size:clamp(1.6rem,3.5vw,2.2rem)}
+.lead{color:var(--sub);margin:0 0 24px}
+.card{max-width:900px;margin:0 auto;background:var(--card);border:1px solid #263142;border-radius:14px;padding:18px}
+label{display:block;margin:10px 0 6px;color:var(--sub)}
+input,select,button{width:100%;padding:14px 16px;border-radius:10px;border:1px solid #2a3a55;background:#0e1624;color:var(--ink);font-size:16px}
+button{background:#22c55e;border-color:#22c55e;font-weight:600;cursor:pointer;margin-top:12px}
+button:hover{filter:brightness(1.03)}
+.out{margin-top:16px;border:1px dashed #2a3a55;border-radius:10px;padding:12px;white-space:pre-wrap}
+.bad{color:var(--bad)} .good{color:#22c55e} .warn{color:var(--warn)}
+a{color:#93c5fd}
+footer{max-width:900px;margin:24px auto 0;color:var(--sub);text-align:center}
+</style>
 </head>
 <body>
   <h1>⚖️ Rizikos modulis</h1>
-  <p>Įvesk savo tikimybę ir koeficientą.</p>
+  <p class="lead">Įvesk savo tikimybę, koeficientą, bankrolą. Gauni EV, Kelly ir aiškų sprendimą.</p>
 
-  Tikimybė %: <input id="p" type="number" value="55"><br>
-  Koeficientas: <input id="o" type="number" value="1.83"><br>
-  Bankrolas: <input id="bank" type="number" value="100"><br>
-  <button onclick="calc()">Skaičiuoti</button>
+  <div class="card">
+    <label for="p">Tikimybė %</label>
+    <input id="p" type="number" placeholder="pvz.: 55">
 
-  <div id="out"></div>
+    <label for="o">Koeficientas</label>
+    <input id="o" type="number" step="0.01" placeholder="pvz.: 1.83">
+
+    <label for="br">Bankrolas (€)</label>
+    <input id="br" type="number" placeholder="pvz.: 100">
+
+    <label for="kf">Kelly apimtis</label>
+    <select id="kf">
+      <option value="1">100% Kelly</option>
+      <option value="0.75">75% Kelly</option>
+      <option value="0.5" selected>50% Kelly</option>
+      <option value="0.25">25% Kelly</option>
+      <option value="0.1">10% Kelly</option>
+    </select>
+
+    <button onclick="risk()">Skaičiuoti</button>
+    <div id="out" class="out"></div>
+  </div>
+
+  <footer>© Supermažylis • <a href="index.html">grįžti į meniu</a></footer>
 
 <script>
-function calc(){
-  let p=parseFloat(document.getElementById("p").value)/100;
-  let o=parseFloat(document.getElementById("o").value);
-  let bank=parseFloat(document.getElementById("bank").value);
+function risk(){
+  const p = parseFloat(document.getElementById('p').value)/100;   // tikimybė 0–1
+  const o = parseFloat(document.getElementById('o').value);
+  const br = parseFloat(document.getElementById('br').value);
+  const kf = parseFloat(document.getElementById('kf').value);
+  if(!(p>0 && p<1 && o>1 && br>0)){document.getElementById('out').textContent='Patikrink įvestis.';return;}
 
-  let ev = (p*o - 1).toFixed(3);
-  let f = ((p*o - (1-p)) / o).toFixed(3);
-  let stake = (f*bank).toFixed(2);
+  const q = 1-p;
+  const b = o-1;                          // išmoka per 1 €
+  const ev = p*b - q*1;                   // EV per 1 € statymo
+  const edge = p - 1/o;                    // pranašumas prieš „breakeven“
+  const fairProb = (1/o)*100;
+  const kellyFull = (b*p - q)/b;          // pilnas Kelly %
+  const stakeKelly = Math.max(0, kellyFull) * kf * br;
 
-  let value = (ev>0) ? "YRA value ✅" : "Nėra value ❌";
-  let sprendimas = (ev>0) ? "Statyti" : "Nestatyti";
-  let rezultatas = (Math.random()<p) ? "Laimės 🎉" : "Nelaimės 💀";
+  const value = ev>0 && edge>0;
+  const statyti = value ? 'Statyti' : 'Nestatyti';
+  const laimes = value ? 'Laimės (ilguoju laikotarpiu)' : 'Nelaimės';
+  const evText = (ev>=0?'+':'')+ev.toFixed(4)+' €/€';
 
-  document.getElementById("out").innerHTML = 
-    `EV: ${ev}<br>Kelly: ${f}<br>Rekomenduojamas statymas: ${stake}<br>
-     ${value}<br>${sprendimas}<br>${rezultatas}`;
+  let out = '';
+  out += `Breakeven tikimybė: ${fairProb.toFixed(2)}%\n`;
+  out += `Tavo pranašumas (edge): ${(edge*100).toFixed(2)}%\n`;
+  out += `EV (per 1 €): ${evText}\n`;
+  out += `Pilnas Kelly: ${(Math.max(0,kellyFull)*100).toFixed(2)}% bankrolo\n`;
+  out += `Rekomenduojamas statymas (su pasirinktu Kelly): ${stakeKelly.toFixed(2)} €\n\n`;
+  out += value
+      ? `✅ <span class="good">${statyti}</span> • <span class="good">${laimes}</span>`
+      : `❌ <span class="bad">${statyti}</span> • <span class="bad">${laimes}</span>`;
+
+  document.getElementById('out').innerHTML = out;
 }
 </script>
 </body>
