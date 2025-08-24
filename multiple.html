@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Multiple statymai (parlay)</title>
+  <style>
+    :root{
+      --bg:#0e1116; --ink:#eaf2ff; --mut:#9aaac0;
+      --card:#121923; --edge:#1e2a3b; --acc:#00d3a6; --ok:#1fd47a; --bad:#ff6b6b;
+      --btn:#14ffc3; --btnink:#062a22;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font:16px/1.5 system-ui, Segoe UI, Roboto, Ubuntu;background:var(--bg);color:var(--ink)}
+    header,main,footer{max-width:1000px;margin:0 auto;padding:16px}
+    header{text-align:center}
+    h1{margin:.2rem 0 0}
+    p.lead{margin:.2rem 0 0;color:var(--mut)}
+    .card{background:var(--card);border:1px solid var(--edge);border-radius:14px;padding:16px;margin:12px 0}
+    label{display:block;margin:10px 0 6px}
+    input,select{width:100%;padding:10px;border-radius:10px;border:1px solid var(--edge);background:#0a0f17;color:var(--ink)}
+    .btn{display:inline-block;background:var(--btn);color:var(--btnink);border:none;padding:10px 14px;border-radius:10px;font-weight:700;cursor:pointer}
+    table{width:100%;border-collapse:separate;border-spacing:0 8px}
+    th,td{padding:10px;border-bottom:1px solid var(--edge)}
+    .pill{display:inline-block;padding:4px 10px;border-radius:999px;font-weight:700}
+    .ok{background:color-mix(in srgb, var(--ok) 20%, transparent);color:var(--ok);border:1px solid color-mix(in srgb,var(--ok) 60%, transparent)}
+    .bad{background:color-mix(in srgb, var(--bad) 20%, transparent);color:var(--bad);border:1px solid color-mix(in srgb,var(--bad) 60%, transparent)}
+    .mut{color:var(--mut)}
+    footer{text-align:center;color:var(--mut);font-size:.9rem}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🧩 Multiple statymai</h1>
+    <p class="lead">Sujunk 2–5 įvykius: bendra tikimybė, koeficientas, EV, Kelly ir aiškus „Statyti / Nestatyti“.</p>
+  </header>
+
+  <main>
+    <section class="card">
+      <label>Koeficientai (atskirti kableliais)</label>
+      <input id="odds" placeholder="pvz.: 1.85, 2.10, 3.20">
+
+      <label>Tavo tikimybės kiekvienam įvykiui % (ta pačia tvarka)</label>
+      <input id="probs" placeholder="pvz.: 58, 52, 35">
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
+        <div style="flex:1 1 160px">
+          <label>Bankrolas (€)</label>
+          <input id="bank" type="number" value="100" min="0" step="0.01">
+        </div>
+        <div style="flex:1 1 160px">
+          <label>Kelly apimtis</label>
+          <select id="kelly">
+            <option value="1">100% Kelly</option>
+            <option value="0.5" selected>50% Kelly</option>
+            <option value="0.25">25% Kelly</option>
+          </select>
+        </div>
+        <div style="align-self:end">
+          <button class="btn" onclick="calc()">Skaičiuoti</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="perLeg" class="card" style="display:none"></section>
+    <section id="overall" class="card" style="display:none"></section>
+  </main>
+
+  <footer>© Supermažylis • <a class="mut" href="index.html">grįžti į meniu</a></footer>
+
+<script>
+function pct(x){ return (x*100).toFixed(2)+'%'; }
+
+function calc(){
+  // --- įvestys
+  const odds = document.getElementById('odds').value.split(',')
+                .map(s=>parseFloat(s.trim())).filter(x=>!Number.isNaN(x) && x>1.01);
+  const probs = document.getElementById('probs').value.split(',')
+                .map(s=>parseFloat(s.trim())/100).filter(x=>!Number.isNaN(x) && x>0 && x<1.0001);
+  const bank = parseFloat(document.getElementById('bank').value||'0');
+  const kPart = parseFloat(document.getElementById('kelly').value||'0.5');
+
+  if(odds.length<2 || odds.length>5){ alert('Įvesk 2–5 koeficientus.'); return; }
+  if(probs.length !== odds.length){ alert('Tikimybių skaičius turi sutapti su koeficientų skaičiumi.'); return; }
+
+  // --- per-leg lentelė
+  let rows = `
+    <h3>🧱 Kiekvienas įvykis</h3>
+    <table>
+      <thead><tr>
+        <th>#</th><th>Koef.</th><th>Implied p</th><th>Tavo p</th><th>Value?</th><th>Sprendimas</th>
+      </tr></thead><tbody>
+  `;
+  let pTotal = 1, oTotal = 1, anyBad=false;
+  odds.forEach((o,i)=>{
+    const pImp = 1/o;
+    const pMy  = probs[i];
+    const value = (pMy > pImp);
+    const pill  = value ? `<span class="pill ok">YRA VALUE</span>` : `<span class="pill bad">NĖRA VALUE</span>`;
+    const act   = value ? `<span class="pill ok">Statyti</span>`     : `<span class="pill bad">Nestatyti</span>`;
+    rows += `<tr>
+      <td>${i+1}</td>
+      <td>${o.toFixed(2)}</td>
+      <td>${pct(pImp)}</td>
+      <td>${pct(pMy)}</td>
+      <td>${pill}</td>
+      <td>${act}</td>
+    </tr>`;
+    pTotal *= pMy;
+    oTotal *= o;
+    if(!value) anyBad = true;
+  });
+  rows += `</tbody></table>`;
+  const perLeg = document.getElementById('perLeg');
+  perLeg.style.display='block';
+  perLeg.innerHTML = rows;
+
+  // --- bendra logika
+  const b = oTotal - 1;
+  const EVperEuro = (pTotal*oTotal - 1);           // EV už 1€
+  const kellyFull = (b>0) ? ((b*pTotal - (1-pTotal)) / b) : 0; // Kelly frakcija
+  const kellyUsed = Math.max(0, kellyFull) * kPart;
+  const stake = Math.max(0, kellyUsed * bank);
+
+  const valueAll = (EVperEuro>0);
+  const sprendimas = valueAll ? 'Statyti' : 'Nestatyti';
+  const prognoze = (pTotal>=0.5) ? 'Laimės dažniau nei pralaimės' : 'Dažniau pralaimės nei laimės';
+
+  const overall = document.getElementById('overall');
+  overall.style.display='block';
+  overall.innerHTML = `
+    <h3>📦 Bendra išvada</h3>
+    <p>
+      Bendras koeficientas: <b>${oTotal.toFixed(2)}</b> &nbsp;|&nbsp;
+      Bendra tikimybė: <b>${pct(pTotal)}</b> &nbsp;|&nbsp;
+      EV/€: <b>${EVperEuro.toFixed(3)}</b>
+    </p>
+    <p>
+      Kelly (pilnas): <b>${kellyFull.toFixed(4)}</b> &nbsp;→&nbsp;
+      pasirinkta dalis: <b>${(kPart*100).toFixed(0)}%</b> &nbsp;→&nbsp;
+      rekomenduojamas statymas: <b>${stake.toFixed(2)} €</b> (bankrolas ${bank.toFixed(2)} €)
+    </p>
+    <p>
+      ${valueAll ? '<span class="pill ok">YRA VALUE</span>' : '<span class="pill bad">NĖRA VALUE</span>'}
+      &nbsp;→&nbsp; <b>${sprendimas}</b>${anyBad ? ' <span class="mut">(dėmesio: yra įvykių be value)</span>' : ''}
+      <br>
+      Prognozė: <b>${prognoze}</b>
+    </p>
+  `;
+}
+</script>
+</body>
+    </html>
