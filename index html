@@ -1,17 +1,46 @@
 <!DOCTYPE html>
 <html lang="lt">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Supermazylis meniu</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Supermazylis-lab</title>
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;margin:0;background:#0b1020;color:#eaf0ff}
+    .wrap{max-width:820px;margin:0 auto;padding:28px}
+    h1{font-size:clamp(28px,5vw,44px);margin:0 0 18px}
+    p.lead{color:#a9b4d0;margin:0 0 22px}
+    .grid{display:grid;gap:14px}
+    @media (min-width:560px){.grid{grid-template-columns:1fr 1fr}}
+    a.card{display:block;padding:16px 18px;background:#121830;border:1px solid #243055;border-radius:14px;
+      text-decoration:none;color:#eaf0ff}
+    a.card small{display:block;color:#95a2c8;margin-top:6px}
+    a.card:active, a.card:focus, a.card:hover{outline:none;border-color:#37ffd2;box-shadow:0 0 0 2px #37ffd233}
+    footer{margin-top:26px;color:#7f8ab2;font-size:14px}
+  </style>
 </head>
 <body>
-  <h1>🦅 Supermažylio laboratorija</h1>
-  <p>Pasirink modulį:</p>
-  <ul>
-    <li><a href="prob.html">🎯 Greitas konverteris (prob.html)</a></li>
-    <li><a href="risk.html">⚖️ Rizikos modulis (risk.html)</a></li>
-    <li><a href="multiple.html">➕ Kombinuotas statymas (multiple.html)</a></li>
-  </ul>
+  <div class="wrap">
+    <h1>🦅 Supermažylio laboratorija</h1>
+    <p class="lead">Greita prieiga prie mūsų įrankių.</p>
+
+    <div class="grid">
+      <a class="card" href="prob.html">
+        🎯 Greitas konverteris
+        <small>Implied %, „fair“ koef., VALUE rodiklis</small>
+      </a>
+
+      <a class="card" href="risk.html">
+        ⚖️ Rizikos modulis
+        <small>Bankrolo rizika, „drawdown“, tikslai</small>
+      </a>
+
+      <a class="card" href="multiple.html">
+        ➕ Kombinuotas (multiple)
+        <small>2–5 pasirinkimai, jungtinė tikimybė & EV</small>
+      </a>
+    </div>
+
+    <footer>v0.1 • deividassimkus101-png</footer>
+  </div>
 </body>
 </html>
