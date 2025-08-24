@@ -1,13 +1,68 @@
 <!DOCTYPE html>
 <html lang="lt">
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="refresh" content="0; url=home.html">
-  <title>Kraunasi...</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Supermažylis – meniu</title>
+  <style>
+    :root{
+      --bg:#0b0f16; --card:#141b24; --ink:#e8f0ff; --muted:#93a4bd;
+      --accent:#14e6a6; --good:#0f766e; --warn:#f97316; --blue:#2563eb;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font:16px/1.55 system-ui,Segoe UI,Roboto,Ubuntu;
+         background:var(--bg);color:var(--ink)}
+    header{max-width:960px;margin:0 auto;padding:28px 16px 12px}
+    h1{margin:0 0 6px;font-size:clamp(1.6rem,3.5vw,2.6rem)}
+    p.lead{margin:0;color:var(--muted)}
+    main{max-width:960px;margin:0 auto;padding:20px 16px 40px;
+         display:grid;gap:18px}
+    @media (min-width:720px){ main{grid-template-columns:1fr 1fr 1fr} }
+    .card{background:var(--card);border:1px solid #223142;border-radius:16px;
+          padding:18px;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+    .card h3{margin:0 0 6px;font-size:1.1rem}
+    .card p{margin:0 0 14px;color:var(--muted)}
+    .btn{display:inline-block;text-decoration:none;padding:11px 16px;
+         border-radius:10px;color:#00131a;background:var(--accent);
+         font-weight:600}
+    .prob{ border-left:4px solid var(--blue) }
+    .risk{ border-left:4px solid var(--good) }
+    .mult{ border-left:4px solid var(--warn) }
+    footer{max-width:960px;margin:18px auto 40px;color:var(--muted);
+           padding:0 16px}
+    a.back{color:var(--muted);text-decoration:underline dotted}
+  </style>
 </head>
 <body>
-  <p>Kraunasi... Jei neužsikrauna, spausk 
-    <a href="home.html">čia</a>.
-  </p>
+  <header>
+    <h1>Mažylio → Erelio laboratorija</h1>
+    <p class="lead">Pagrindinis meniu – visi įrankiai vienoje vietoje.</p>
+  </header>
+
+  <main>
+    <section class="card prob">
+      <h3>🎯 Greitas konverteris</h3>
+      <p>Įvesk koeficientus, gauk implied %, fair koef. ir aiškų sprendimą.</p>
+      <a class="btn" href="prob.html">Atidaryti</a>
+    </section>
+
+    <section class="card risk">
+      <h3>⚖️ Rizikos modulis</h3>
+      <p>Kelly (pilnas/½/¼), bankrolo dalis, sprendimas „Statyti / Nestatyti“.</p>
+      <a class="btn" href="risk.html">Atidaryti</a>
+    </section>
+
+    <section class="card mult">
+      <h3>🧩 Multiple statymai</h3>
+      <p>2–5 įvykiai: bendra tikimybė, koeficientas, EV ir Kelly.</p>
+      <a class="btn" href="multiple.html">Atidaryti</a>
+    </section>
+  </main>
+
+  <footer>
+    © Supermažylis • <a class="back" href="prob.html">Greitas konverteris</a> ·
+    <a class="back" href="risk.html">Rizikos modulis</a> ·
+    <a class="back" href="multiple.html">Multiple statymai</a>
+  </footer>
 </body>
 </html>
