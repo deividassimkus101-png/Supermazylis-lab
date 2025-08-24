@@ -1,56 +1,8 @@
 <!doctype html>
-<html lang="lt">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Supermazylis-lab</title>
-  <style>
-    :root {
-      --bg:#ffffff; --ink:#111; --edge:#e5e7eb; --acc:#0d9488;
-    }
-    *{box-sizing:border-box}
-    body{margin:0;font:16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, sans-serif;
-         background:var(--bg); color:var(--ink)}
-    header{max-width:900px;margin:0 auto; padding:24px}
-    h1{margin:0 0 8px}
-    p.lead{margin:0 0 24px; color:#374151}
-    main{max-width:900px;margin:0 auto; padding:0 24px 32px}
-    .grid{display:grid; gap:16px}
-    @media (min-width:720px){ .grid{grid-template-columns:repeat(2,1fr)} }
-    .card{border:1px solid var(--edge); border-radius:12px; padding:16px}
-    .card h3{margin:0 0 8px}
-    a.btn{display:inline-block; margin-top:8px; padding:8px 12px; border-radius:10px;
-          border:1px solid var(--acc); color:var(--acc); text-decoration:none}
-    a.btn:hover{background:#ecfeff}
-    footer{max-width:900px;margin:0 auto; padding:16px 24px; color:#6b7280}
-  </style>
-</head>
-<body>
-  <header>
-    <h1>Supermazylis-lab</h1>
-    <p class="lead">Mūsų įrankių rinkinys. Paspausk modulį žemiau.</p>
-  </header>
-
-  <main class="grid">
-    <section class="card">
-      <h3>Greitas konverteris</h3>
-      <p>Koeficientai → tikimybės, „fair“ koef., EV, Kelly, sprendimas.</p>
-      <a class="btn" href="prob.html">Atidaryti prob.html</a>
-    </section>
-
-    <section class="card">
-      <h3>Rizikos modulis</h3>
-      <p>Limitai, downswings, „ar statyti / nestatyti“ indikatorius.</p>
-      <a class="btn" href="risk.html">Atidaryti risk.html</a>
-    </section>
-
-    <section class="card">
-      <h3>Multiple (kombinuoti)</h3>
-      <p>2–5 koefai, sujungtas p, EV, Kelly, sprendimas.</p>
-      <a class="btn" href="multiple.html">Atidaryti multiple.html</a>
-    </section>
-  </main>
-
-  <footer>© Supermazylis-lab</footer>
-</body>
-</html>
+<meta charset="utf-8">
+<title>Supermazylis-lab</title>
+<h1>Supermazylis-lab</h1>
+<p><a href="prob.html">➡️ Greitas konverteris</a></p>
+<p><a href="risk.html">➡️ Rizikos modulis</a></p>
+<p><a href="multiple.html">➡️ Multiple (kombinuoti)</a></p>
+<p style="color:#666">Jei šito nematai – vis dar cache. Tada pridėk ?v=2 prie adreso.</p>
