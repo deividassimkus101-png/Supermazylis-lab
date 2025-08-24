@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Super Mažylis – laboratorija</title>
+<style>
+  body{
+    margin:0; font:16px/1.6 system-ui, sans-serif;
+    background:#0e1116; color:#e8eef5;
+    display:flex; justify-content:center; align-items:center;
+    min-height:100vh; text-align:center; flex-direction:column;
+  }
+  h1{font-size:1.8rem; margin-bottom:10px;}
+  p{color:#90a4ae; margin-bottom:30px;}
+  a{
+    display:inline-block; padding:14px 24px;
+    background:#0dbf9b; color:#07211c; font-weight:700;
+    border-radius:12px; text-decoration:none; transition:.2s;
+  }
+  a:hover{background:#11d6ae;}
+  footer{margin-top:40px; font-size:.9rem; color:#90a4ae;}
+</style>
+</head>
+<body>
+  <h1>🧪 Sveikas atvykęs į Super Mažylio laboratoriją!</h1>
+  <p>Čia rasi mūsų įrankius ir skaičiuotuvus.</p>
+
+  <a href="prob.html">🚀 Atidaryti Greitą konverterį</a>
+
+  <footer>© 2025 SuperMažylis Lab</footer>
+</body>
+</html>
