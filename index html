@@ -1,65 +1,44 @@
 <!DOCTYPE html>
 <html lang="lt">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Supermazylis-lab</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Supermažylis</title>
   <style>
-    /* LABAI KONTRASTINGAS SAUGUS TEMOS VARIANTAS */
-    :root { --bg:#ffffff; --ink:#111111; --card:#f2f2f2; --accent:#0a66ff; }
-    html,body { margin:0; padding:0; background:var(--bg); color:var(--ink); font-family:system-ui, Arial, sans-serif; }
-    header { max-width:900px; margin:24px auto 8px; padding:0 16px; }
-    h1{ margin:0; font-size:2rem; color:var(--ink); }
-    p{ margin:.5rem 0 0; }
-    main{ max-width:900px; margin:12px auto 32px; padding:0 16px; display:grid; gap:16px; }
-    .card{
-      background:var(--card); border:2px solid #d0d0d0; border-radius:12px; padding:16px;
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      color: #222;
+      text-align: center;
+      padding: 40px;
     }
-    .btn{
-      display:inline-block; margin-top:8px; padding:10px 14px; border:2px solid var(--accent);
-      text-decoration:none; font-weight:700; border-radius:8px; color:var(--accent);
-      background:#fff;
+    h1 {
+      color: #222;
     }
-    .btn:active, .btn:hover{ background:var(--accent); color:#fff; }
-    footer{ max-width:900px; margin:16px auto; padding:0 16px; color:#555; }
+    .btn {
+      display: inline-block;
+      margin: 12px;
+      padding: 12px 24px;
+      font-size: 18px;
+      border-radius: 8px;
+      text-decoration: none;
+      color: white;
+      font-weight: bold;
+    }
+    .btn-prob { background: #007bff; }     /* mėlynas */
+    .btn-risk { background: #28a745; }     /* žalias */
+    .btn-mult { background: #ff5722; }     /* oranžinis */
+    .btn:hover {
+      filter: brightness(1.1);
+    }
   </style>
 </head>
 <body>
-  <header>
-    <h1>🧮 Supermazylis-lab</h1>
-    <p>Greiti įrankiai: konverteris, rizika, multiple.</p>
-  </header>
+  <h1>🦅 Supermažylio laboratorija</h1>
+  <p>Pasirink skaičiuotuvą:</p>
 
-  <main>
-    <section class="card">
-      <h2>🎯 Greitas konverteris</h2>
-      <p>Implied %, „fair“ koef., VALUE.</p>
-      <a class="btn" href="prob.html">Atidaryti prob.html</a>
-    </section>
-
-    <section class="card">
-      <h2>⚖️ Rizikos modulis</h2>
-      <p>Kelly, statyti/nestatyti, „laimės / nelaimės“.</p>
-      <a class="btn" href="risk.html">Atidaryti risk.html</a>
-    </section>
-
-    <section class="card">
-      <h2>➕ Multiple modulis</h2>
-      <p>2–5 koefai + p → jungtinis EV/ Kelly / sprendimas.</p>
-      <a class="btn" href="multiple.html">Atidaryti multiple.html</a>
-    </section>
-
-    <!-- Paprastas nuorodų sąrašas – net jei viskas „užsistailins“, šitos bus matomos -->
-    <section class="card">
-      <h3>Greitos nuorodos (fallback)</h3>
-      <ul>
-        <li><a href="prob.html">prob.html</a></li>
-        <li><a href="risk.html">risk.html</a></li>
-        <li><a href="multiple.html">multiple.html</a></li>
-      </ul>
-    </section>
-  </main>
-
-  <footer>© Supermazylis-lab</footer>
+  <a href="prob.html" class="btn btn-prob">🎯 Greitas konverteris</a><br>
+  <a href="risk.html" class="btn btn-risk">⚖️ Rizikos modulis</a><br>
+  <a href="multiple.html" class="btn btn-mult">➕ Multiple modulis</a>
 </body>
 </html>
