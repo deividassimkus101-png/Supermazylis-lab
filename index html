@@ -1,56 +1,56 @@
-DOCTYPE html>
+<!doctype html>
 <html lang="lt">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Supermažylis – pagrindinis meniu</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Supermazylis-lab</title>
   <style>
-    :root{
-      --bg:#0e1116; --ink:#eaf2ff; --mut:#9aaac0;
-      --card:#121923; --edge:#1e2a3b; --acc:#00d3a6;
-      --btn:#14ffc3; --btnink:#062a22;
+    :root {
+      --bg:#ffffff; --ink:#111; --edge:#e5e7eb; --acc:#0d9488;
     }
     *{box-sizing:border-box}
-    body{margin:0;font:16px/1.5 system-ui,Segoe UI,Roboto,Ubuntu;background:var(--bg);color:var(--ink)}
-    header{max-width:960px;margin:0 auto;padding:24px 16px;text-align:center}
-    h1{margin:0 0 6px}
-    p.lead{margin:0;color:var(--mut)}
-    main{max-width:1000px;margin:0 auto;padding:16px;display:grid;gap:16px}
-    @media(min-width:720px){main{grid-template-columns:repeat(3,1fr)}}
-    .card{background:var(--card);border:1px solid var(--edge);border-radius:14px;padding:18px}
-    .card h3{margin:0 0 6px}
-    .actions{display:flex;gap:10px;flex-wrap:wrap}
-    a.btn{display:inline-block;padding:10px 14px;border-radius:10px;text-decoration:none;background:var(--btn);color:var(--btnink);font-weight:700}
-    a.link{color:var(--acc);text-decoration:none}
-    footer{max-width:960px;margin:0 auto;padding:20px 16px;text-align:center;color:var(--mut);font-size:.9rem}
+    body{margin:0;font:16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, sans-serif;
+         background:var(--bg); color:var(--ink)}
+    header{max-width:900px;margin:0 auto; padding:24px}
+    h1{margin:0 0 8px}
+    p.lead{margin:0 0 24px; color:#374151}
+    main{max-width:900px;margin:0 auto; padding:0 24px 32px}
+    .grid{display:grid; gap:16px}
+    @media (min-width:720px){ .grid{grid-template-columns:repeat(2,1fr)} }
+    .card{border:1px solid var(--edge); border-radius:12px; padding:16px}
+    .card h3{margin:0 0 8px}
+    a.btn{display:inline-block; margin-top:8px; padding:8px 12px; border-radius:10px;
+          border:1px solid var(--acc); color:var(--acc); text-decoration:none}
+    a.btn:hover{background:#ecfeff}
+    footer{max-width:900px;margin:0 auto; padding:16px 24px; color:#6b7280}
   </style>
 </head>
 <body>
   <header>
-    <h1>Supermažylis 🧪🦅</h1>
-    <p class="lead">Mūsų įrankiai vienoje vietoje – paprastai ir aiškiai.</p>
+    <h1>Supermazylis-lab</h1>
+    <p class="lead">Mūsų įrankių rinkinys. Paspausk modulį žemiau.</p>
   </header>
 
-  <main>
+  <main class="grid">
     <section class="card">
-      <h3>⚖️ Rizikos modulis</h3>
-      <p>Kelly + „Statyti/Nestatyti“, „Yra VALUE/Nėra“, „Laimės/Nelaimės“.</p>
-      <div class="actions"><a class="btn" href="risk.html">Atidaryti</a></div>
+      <h3>Greitas konverteris</h3>
+      <p>Koeficientai → tikimybės, „fair“ koef., EV, Kelly, sprendimas.</p>
+      <a class="btn" href="prob.html">Atidaryti prob.html</a>
     </section>
 
     <section class="card">
-      <h3>🎯 Greitas konverteris</h3>
-      <p>Koefai → tikimybės, overround, „fair“ koef., Kelly.</p>
-      <div class="actions"><a class="btn" href="prob.html">Atidaryti</a></div>
+      <h3>Rizikos modulis</h3>
+      <p>Limitai, downswings, „ar statyti / nestatyti“ indikatorius.</p>
+      <a class="btn" href="risk.html">Atidaryti risk.html</a>
     </section>
 
     <section class="card">
-      <h3>🧩 Multiple skaičiuotuvas</h3>
-      <p>2–5 įvykių junginys: bendras koef., p, EV, Kelly, sprendimas.</p>
-      <div class="actions"><a class="btn" href="multiple.html">Atidaryti</a></div>
+      <h3>Multiple (kombinuoti)</h3>
+      <p>2–5 koefai, sujungtas p, EV, Kelly, sprendimas.</p>
+      <a class="btn" href="multiple.html">Atidaryti multiple.html</a>
     </section>
   </main>
 
-  <footer>© Supermažylis • <a class="link" href="?v=3">atnaujinti</a></footer>
+  <footer>© Supermazylis-lab</footer>
 </body>
 </html>
