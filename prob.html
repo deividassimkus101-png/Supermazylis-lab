@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mažylio konverteris – prob.html</title>
+<style>
+  :root{
+    --bg:#0e1116; --ink:#e8eef5; --mut:#90a4ae;
+    --card:#131a21; --edge:#1e2a38;
+    --ok:#2ecc71; --bad:#e57373; --warn:#f9a825;
+    --btn:#0dbf9b; --btn-ink:#07211c;
+  }
+  body{margin:0;font:16px/1.5 system-ui;background:var(--bg);color:var(--ink);padding:18px;}
+  header,main{max-width:860px;margin:0 auto;}
+  h1{margin:0 0 10px;font-size:1.6rem;}
+  .card{background:var(--card);border:1px solid var(--edge);border-radius:12px;padding:16px;margin-bottom:14px}
+  label{display:block;margin:6px 0 4px;color:var(--mut)}
+  input,select{width:100%;padding:10px;border-radius:8px;background:#101821;color:var(--ink);border:1px solid #263445}
+  button{margin-top:10px;padding:10px 14px;border-radius:10px;background:var(--btn);color:var(--btn-ink);font-weight:700;border:0;cursor:pointer}
+  table{width:100%;border-collapse:collapse;margin-top:10px}
+  th,td{padding:8px;border-bottom:1px solid #223140;text-align:right}
+  th:first-child,td:first-child{text-align:center}
+  th{color:var(--mut);font-weight:600}
+  .pill{display:inline-block;padding:4px 8px;border-radius:999px;font-weight:600}
+  .good{background:rgba(46,204,113,.15);color:var(--ok);border:1px solid rgba(46,204,113,.35)}
+  .bad{background:rgba(229,115,115,.12);color:var(--bad);border:1px solid rgba(229,115,115,.35)}
+  .note{font-size:.85rem;color:var(--mut);margin-top:8px}
+</style>
+</head>
+<body>
+<header>
+  <h1>🎯 Mažylio Greitas konverteris</h1>
+  <p class="note">Įvesk koeficientus ir savo p – pamatysi VALUE, sprendimą ir Kelly statymą.</p>
+</header>
+
+<main>
+  <section class="card">
+    <label for="odds">Koeficientai (atskirti kableliais)</label>
+    <input id="odds" placeholder="pvz.: 2.10, 3.40, 4.20" />
+    <button id="calc">Skaičiuoti</button>
+
+    <table id="tbl" style="display:none">
+      <thead>
+        <tr>
+          <th>#</th><th>Koef.</th><th>Implied p</th><th>Fair p</th><th>Fair koef.</th><th>Edge</th><th>VALUE</th><th>Sprendimas</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <section class="card">
+    <label for="idx">Pasirinkimo numeris</label>
+    <input id="idx" type="number" min="1" value="1" />
+
+    <label for="pct">Tavo tikimybė p (%)</label>
+    <input id="pct" type="number" min="0" max="100" step="0.1" placeholder="pvz.: 55" />
+
+    <label for="bank">Bankrolas (€)</label>
+    <input id="bank" type="number" min="0" step="0.01" value="100" />
+
+    <label for="frac">Kelly apimtis</label>
+    <select id="frac">
+      <option value="1">100% Kelly</option>
+      <option value="0.5" selected>50% Kelly</option>
+      <option value="0.25">25% Kelly</option>
+    </select>
+
+    <button id="kgo">Apskaičiuoti Kelly</button>
+    <div id="kpi" class="note"></div>
+  </section>
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+const tbl = $('tbl'), tbody = tbl.querySelector('tbody');
+
+function toPct(x){ return (x*100).toFixed(2)+'%'; }
+function clamp(x,a,b){ return Math.min(b,Math.max(a,x)); }
+
+function parseOdds(){
+  const parts = ($('odds').value||'').split(',').map(s=>parseFloat(s.trim())).filter(x=>x>1.0001);
+  if(parts.length<2){tbl.style.display='none'; return {odds:[]};}
+
+  const implied=parts.map(o=>1/o);
+  const sumImp=implied.reduce((a,b)=>a+b,0);
+  const norm=sumImp>0?1/sumImp:0;
+  const fairP=implied.map(p=>p*norm);
+  const fairOdds=fairP.map(p=>1/p);
+
+  tbody.innerHTML='';
+  parts.forEach((o,i)=>{
+    const hasValue = o>fairOdds[i];
+    const edge=((o/fairOdds[i])-1)*100;
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td>${i+1}</td>
+      <td>${o.toFixed(2)}</td>
+      <td>${toPct(1/o)}</td>
+      <td>${toPct(fairP[i])}</td>
+      <td>${fairOdds[i].toFixed(2)}</td>
+      <td>${edge>=0?'+':''}${edge.toFixed(2)}%</td>
+      <td>${hasValue?'<span class="pill good">TAIP</span>':'<span class="pill bad">NE</span>'}</td>
+      <td>${hasValue?'Statyti':'Nestatyti'}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+  tbl.style.display='';
+  return {odds:parts,fairOdds};
+}
+
+function kelly(){
+  const res=parseOdds(); if(!res.odds.length){$('kpi').textContent='Įvesk koeficientus.';return;}
+  const i=clamp(parseInt($('idx').value)-1,0,res.odds.length-1);
+  const o=res.odds[i];
+  const pUser=clamp(parseFloat($('pct').value)/100,0,1);
+  const bank=Math.max(0,parseFloat($('bank').value)||0);
+  const frac=parseFloat($('frac').value)||0;
+
+  if(!pUser){$('kpi').textContent='Įvesk savo tikimybę p (%).';return;}
+
+  const fStar=(((o-1)*pUser)-(1-pUser))/(o-1);
+  const stake=Math.max(0,fStar)*bank*frac;
+  const evPerEuro=pUser*(o-1)-(1-pUser);
+  const decision=evPerEuro>0?'<span class="pill good">Laimės (ilgainiui)</span>':'<span class="pill bad">Nelaimės (ilgainiui)</span>';
+
+  $('kpi').innerHTML=`
+    Pasirinkimas #${i+1}, koef.=${o.toFixed(2)}<br>
+    Kelly f*=${fStar.toFixed(4)} → statymas ≈ ${stake.toFixed(2)} € iš ${bank.toFixed(2)} €<br>
+    EV/€=${evPerEuro.toFixed(4)} → Sprendimas: ${decision}
+  `;
+}
+
+$('calc').addEventListener('click',parseOdds);
+$('kgo').addEventListener('click',kelly);
+</script>
+</body>
+  </html>
