@@ -1,41 +1,21 @@
 <!DOCTYPE html>
 <html lang="lt">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Supermažylis</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #0d1117;
-      color: #f0f6fc;
-      text-align: center;
-      padding: 40px;
-    }
-    h1 { color: #58a6ff; }
-    .btn {
-      display: block;
-      margin: 15px auto;
-      padding: 14px 28px;
-      font-size: 18px;
-      border-radius: 8px;
-      text-decoration: none;
-      color: white;
-      width: 250px;
-    }
-    .btn:hover { filter: brightness(1.1); }
-    .btn-prob { background: #007bff; }
-    .btn-risk { background: #28a745; }
-    .btn-mult { background: #ff5722; }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Supermažylio meniu 🚀</title>
 </head>
-<body>
-  <h1>🧮 Supermažylio laboratorija</h1>
+<body style="font-family:Arial,sans-serif;background:#0d1117;color:#f0f6fc;text-align:center;padding:40px">
+  <h1 style="color:#58a6ff">🧮 Supermažylio laboratorija</h1>
   <p>Pasirink skaičiuotuvą:</p>
 
-  <a href="https://deividassimkus101-png.github.io/Supermazylis-lab/prob.html" class="btn btn-prob">🎯 Greitas konverteris</a>
-  <a href="https://deividassimkus101-png.github.io/Supermazylis-lab/risk.html" class="btn btn-risk">⚖️ Rizikos modulis</a>
-  <a href="https://deividassimkus101-png.github.io/Supermazylis-lab/multiple.html" class="btn btn-mult">🧩 Multiple statymai</a>
+  <p><a style="display:inline-block;margin:10px;padding:12px 20px;background:#007bff;color:#fff;border-radius:8px;text-decoration:none"
+        href="https://deividassimkus101-png.github.io/Supermazylis-lab/prob.html">🎯 Greitas konverteris</a></p>
 
+  <p><a style="display:inline-block;margin:10px;padding:12px 20px;background:#28a745;color:#fff;border-radius:8px;text-decoration:none"
+        href="https://deividassimkus101-png.github.io/Supermazylis-lab/risk.html">⚖️ Rizikos modulis</a></p>
+
+  <p><a style="display:inline-block;margin:10px;padding:12px 20px;background:#ff5722;color:#fff;border-radius:8px;text-decoration:none"
+        href="https://deividassimkus101-png.github.io/Supermazylis-lab/multiple.html">🧩 Multiple statymai</a></p>
 </body>
 </html>
