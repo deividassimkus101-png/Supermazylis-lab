@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Monte Carlo simuliatorius</title>
+<style>
+:root{--bg:#0d1117;--ink:#e6edf3;--muted:#9fb0c3;--card:#161b22;--field:#0f1620;--border:#263142;--cyan:#06b6d4}
+*{box-sizing:border-box}body{margin:0;font:16px/1.5 system-ui,Segoe UI,Roboto;color:var(--ink);background:var(--bg)}
+.wrap{max-width:860px;margin:0 auto;padding:28px}h1{margin:0 0 16px;font-size:clamp(1.6rem,3.8vw,2.4rem)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px}
+label{display:block;margin:12px 0 6px;color:var(--muted)}
+input{width:100%;padding:12px;border-radius:10px;border:1px solid var(--border);background:var(--field);color:var(--ink)}
+.row{display:grid;gap:14px;grid-template-columns:1fr 1fr}@media(max-width:760px){.row{grid-template-columns:1fr}}
+.btn{display:inline-block;text-decoration:none;text-align:center;padding:12px 18px;border-radius:12px;border:1px solid var(--border);font-weight:800;cursor:pointer}
+.btn:hover{filter:brightness(1.05)} .btn-cyan{background:var(--cyan);color:#031316}
+.out{margin-top:16px;padding:14px;border-radius:12px;background:var(--field);border:1px dashed var(--border)}
+.back{display:inline-block;margin-top:20px;color:#93c5fd;text-decoration:none}.back:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🎲 Monte Carlo simuliatorius</h1>
+  <div class="card">
+    <div class="row">
+      <div><label>Pradinis bankas (€)</label><input id="bank" type="number" placeholder="1000"></div>
+      <div><label>Statymo dalis %</label><input id="f" type="number" placeholder="2"></div>
+    </div>
+    <div class="row">
+      <div><label>Tikimybė %</label><input id="p" type="number" placeholder="55"></div>
+      <div><label>Koeficientas</label><input id="o" type="number" placeholder="1.90"></div>
+    </div>
+    <div class="row">
+      <div><label>Statymų skaičius</label><input id="n" type="number" placeholder="200"></div>
+      <div><label>Simuliacijų kiekis</label><input id="runs" type="number" placeholder="1000"></div>
+    </div>
+    <button class="btn btn-cyan" onclick="run()">Paleisti</button>
+    <div id="out" class="out"></div>
+  </div>
+  <a class="back" href="index.html">← grįžti į meniu</a>
+</div>
+<script>
+const out=document.getElementById('out');
+function q(v){return Number(v)||0}
+function run(){
+  let B=q(bank.value), p=q(p.value)/100, o=q(o.value), f=q(f.value)/100, n=q(n.value), R=q(runs.value)||500;
+  if(!(B>0&&p>0&&p<1&&o>1&&f>0&&n>0)){out.innerHTML='Patikrink įvestis.';return}
+  const finals=[], dd=[];
+  for(let r=0;r<R;r++){
+    let b=B, peak=b, dd30=false;
+    for(let i=0;i<n;i++){
+      const s=Math.max(0.01,b*f);
+      if(Math.random()<p){ b+=s*(o-1) } else { b-=s }
+      if(b>peak) peak=b;
+      if(!dd30 && (peak-b)/peak>=0.30) dd30=true;
+      if(b<=0){ b=0; break; }
+    }
+    finals.push(b); dd.push(dd30?1:0);
+  }
+  finals.sort((a,b)=>a-b);
+  const k=v=>finals[Math.floor(v/100*finals.length)];
+  const mean=finals.reduce((a,b)=>a+b,0)/finals.length, med=k(50), p05=k(5), p95=k(95);
+  const ruin=finals.filter(x=>x===0).length/finals.length*100, dd30p=dd.reduce((a,b)=>a+b,0)/dd.length*100;
+  out.innerHTML=`Vidurkis: <b>${mean.toFixed(2)} €</b> · Mediana: <b>${med.toFixed(2)} €</b><br>
+                 5%: <b>${p05.toFixed(2)} €</b> · 95%: <b>${p95.toFixed(2)} €</b><br>
+                 Bankroto tikimybė: <b>${ruin.toFixed(1)}%</b><br>
+                 ≥30% nuosmukio tikimybė: <b>${dd30p.toFixed(1)}%</b>`;
+}
+</script>
+</body>
+</html>
