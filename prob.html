@@ -1,30 +1,77 @@
 <!DOCTYPE html>
 <html lang="lt">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Greitas konverteris</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Greitas konverteris</title>
+<style>
+:root{
+  --bg:#0b0f16; --card:#121826; --muted:#0f1b2c;
+  --ink:#e2e8f0; --sub:#94a3b8; --accent:#10b981; --warn:#f59e0b; --bad:#ef4444;
+}
+*{box-sizing:border-box}
+body{margin:0;padding:24px;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,Segoe UI,Roboto,Ubuntu}
+h1{margin:0 0 16px;font-size:clamp(1.6rem,3.5vw,2.2rem)}
+.lead{color:var(--sub);margin:0 0 24px}
+.card{max-width:900px;margin:0 auto;background:var(--card);border:1px solid #263142;border-radius:14px;padding:18px}
+input,button{width:100%;padding:14px 16px;border-radius:10px;border:1px solid #2a3a55;background:#0e1624;color:var(--ink);font-size:16px}
+button{background:#22c55e;border-color:#22c55e;font-weight:600;cursor:pointer}
+button:hover{filter:brightness(1.03)}
+.out{margin-top:16px;border:1px dashed #2a3a55;border-radius:10px;padding:12px;white-space:pre-wrap}
+.bad{color:var(--bad)} .good{color:#22c55e} .warn{color:var(--warn)}
+a{color:#93c5fd}
+footer{max-width:900px;margin:24px auto 0;color:var(--sub);text-align:center}
+</style>
 </head>
 <body>
   <h1>🎯 Greitas konverteris</h1>
-  <p>Įvesk koeficientus, gauk implied % ir fair koef.</p>
-  <input id="odds" placeholder="pvz: 1.83, 3.40, 4.20" size="40">
-  <button onclick="calc()">Skaičiuoti</button>
-  <div id="out"></div>
+  <p class="lead">Įvesk <b>koeficientus</b> (kableliais), gausi <b>implied%</b>, <b>fair</b> koef. ir aiškų sprendimą.</p>
+
+  <div class="card">
+    <label for="odds">Koeficientai (pvz.: 1.83, 3.40, 4.20)</label>
+    <input id="odds" placeholder="1.83, 3.40, 4.20">
+    <div style="height:10px"></div>
+    <button onclick="calc()">Skaičiuoti</button>
+    <div id="out" class="out"></div>
+  </div>
+
+  <footer>© Supermažylis • <a href="index.html">grįžti į meniu</a></footer>
 
 <script>
 function calc(){
-  let odds = document.getElementById("odds").value.split(",").map(x=>parseFloat(x.trim()));
-  let out="";
-  let sum=0;
-  odds.forEach(o=>{sum += 1/o});
-  odds.forEach(o=>{
-    let p=(1/o*100).toFixed(2);
-    let fair=( (1/sum)/ (1/o) * o ).toFixed(3);
-    let value=(1/o<1/sum)?"YRA value":"NĖRA value";
-    out+=`Koef ${o}: P=${p}%, fair≈${fair}, ${value}<br>`;
+  const raw = document.getElementById('odds').value.trim();
+  if(!raw){document.getElementById('out').textContent='Įvesk bent vieną koeficientą.';return;}
+  const odds = raw.split(',').map(x=>parseFloat(x.trim())).filter(x=>x>1);
+  if(!odds.length){document.getElementById('out').textContent='Neteisingas formatas.';return;}
+
+  // overround (sum(1/o))
+  const sumInv = odds.reduce((a,o)=>a+1/o,0);
+  // jei sumInv < 1 — „value“ rinkoje (arbitražo langas)
+  const marketNote = (sumInv<1) ? '🚀 Rinka < 100% — galimas value visai kombinacijai.' :
+                     (sumInv>1) ? 'ℹ️ Rinka > 100% — yra margo (book) antkainio.' :
+                                  '✔️ Rinka ≈ 100%.';
+
+  let out = `Rinkos marža: ${(sumInv*100).toFixed(2)}%\n${marketNote}\n\n`;
+
+  odds.forEach((o,i)=>{
+    const implied = (100/o).toFixed(2);           // paprastas implied %
+    // „fair“ normalizuojant per sumInv (padalijam antkainį proporcingai)
+    const pRaw = 1/o;
+    const pFair = pRaw / sumInv;                   // normalizuota tikimybė
+    const fair = (1/pFair).toFixed(3);
+
+    // sprendimai be tavo p: lyginam su fair – jei market o > fair, teoriškai „value“
+    const value = o > parseFloat(fair);
+    const statyti = value ? 'Statyti' : 'Nestatyti';
+    const laimes = value ? 'Laimės (ilguoju laikotarpiu)' : 'Nelaimės';
+
+    out += `Koef ${o.toFixed(2)} → implied ≈ ${implied}% | fair ≈ ${fair} `
+         + (value ? `• ✅ <span class="good">${statyti}</span> • <span class="good">${laimes}</span>`
+                   : `• ❌ <span class="bad">${statyti}</span> • <span class="bad">${laimes}</span>`)
+         + `\n`;
   });
-  document.getElementById("out").innerHTML=out;
+
+  document.getElementById('out').innerHTML = out;
 }
 </script>
 </body>
