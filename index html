@@ -2,45 +2,60 @@
 <html lang="lt">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Supermazylis-lab</title>
   <style>
-    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;margin:0;background:#0b1020;color:#eaf0ff}
-    .wrap{max-width:820px;margin:0 auto;padding:28px}
-    h1{font-size:clamp(28px,5vw,44px);margin:0 0 18px}
-    p.lead{color:#a9b4d0;margin:0 0 22px}
-    .grid{display:grid;gap:14px}
-    @media (min-width:560px){.grid{grid-template-columns:1fr 1fr}}
-    a.card{display:block;padding:16px 18px;background:#121830;border:1px solid #243055;border-radius:14px;
-      text-decoration:none;color:#eaf0ff}
-    a.card small{display:block;color:#95a2c8;margin-top:6px}
-    a.card:active, a.card:focus, a.card:hover{outline:none;border-color:#37ffd2;box-shadow:0 0 0 2px #37ffd233}
-    footer{margin-top:26px;color:#7f8ab2;font-size:14px}
+    :root{
+      --bg:#0b0f16; --card:#121826; --ink:#e6edf3; --muted:#9fb0c3;
+      --edge:#12a98f; --bad:#e45d5d; --accent:#0ea5e9;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font:16px/1.5 system-ui,Segoe UI,Roboto,Ubuntu;color:var(--ink);background:var(--bg)}
+    header{max-width:900px;margin:0 auto;padding:24px}
+    h1{margin:0 0 6px;font-size:clamp(1.6rem,3.5vw,2.4rem)}
+    p.lead{margin:0;color:var(--muted)}
+    main{max-width:900px;margin:0 auto;padding:24px;display:grid;grid-template-columns:1fr;gap:16px}
+    @media(min-width:740px){ main{grid-template-columns:repeat(2,1fr)} }
+    .card{background:var(--card);border:1px solid #263142;border-radius:14px;padding:18px}
+    .card h2{margin:0 0 8px;font-size:1.1rem}
+    .card p{margin:0 0 14px;color:var(--muted)}
+    .btn{display:inline-block;text-decoration:none;padding:10px 14px;border-radius:10px;border:1px solid #294255}
+    .btn:hover{filter:brightness(1.12)}
+    .good{background:#0f766e;border-color:#0f766e}
+    .mid{background:#0b6fbf;border-color:#0b6fbf}
+    .warn{background:#6b7280;border-color:#6b7280}
+    footer{max-width:900px;margin:20px auto 40px;color:var(--muted);padding:0 24px}
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <h1>🦅 Supermažylio laboratorija</h1>
-    <p class="lead">Greita prieiga prie mūsų įrankių.</p>
+  <header>
+    <h1>🎯 Supermazylis-lab</h1>
+    <p class="lead">Greiti įrankiai: koef. → tikimybės, rizika, kelių atrankų „multiple“.</p>
+  </header>
 
-    <div class="grid">
-      <a class="card" href="prob.html">
-        🎯 Greitas konverteris
-        <small>Implied %, „fair“ koef., VALUE rodiklis</small>
-      </a>
+  <main>
+    <section class="card">
+      <h2>Greitas konverteris</h2>
+      <p>Įvesk koeficientus, gauk implied %, „fair“ koef., VALUE žymą.</p>
+      <a class="btn good" href="prob.html">Atidaryti prob.html</a>
+    </section>
 
-      <a class="card" href="risk.html">
-        ⚖️ Rizikos modulis
-        <small>Bankrolo rizika, „drawdown“, tikslai</small>
-      </a>
+    <section class="card">
+      <h2>Rizikos modulis</h2>
+      <p>Kelly (pilnas/½/¼), bankrolo dalis, „statyti / nestatyti“, „laimės / nelaimės“ tekstas.</p>
+      <a class="btn mid" href="risk.html">Atidaryti risk.html</a>
+    </section>
 
-      <a class="card" href="multiple.html">
-        ➕ Kombinuotas (multiple)
-        <small>2–5 pasirinkimai, jungtinė tikimybė & EV</small>
-      </a>
-    </div>
+    <section class="card">
+      <h2>Multiple (kombinuotas)</h2>
+      <p>2–5 atrankos: jungtinis koef., bendra p, EV, Kelly, sprendimas.</p>
+      <a class="btn warn" href="multiple.html">Atidaryti multiple.html</a>
+    </section>
+  </main>
 
-    <footer>v0.1 • deividassimkus101-png</footer>
-  </div>
+  <footer>
+    <small>Jei puslapis neatsinaujina, pabandyk „Hard refresh“: mobiliajame – 
+      per naršyklės meniu „Reload/Refresh“ (arba uždaryk/atidaryk kortelę iš naujo).</small>
+  </footer>
 </body>
 </html>
