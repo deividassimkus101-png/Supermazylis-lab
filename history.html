@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Statymų istorija</title>
+<style>
+:root{--bg:#0d1117;--ink:#e6edf3;--muted:#9fb0c3;--card:#161b22;--field:#0f1620;--border:#263142;--green:#22c55e;--bad:#ef4444}
+*{box-sizing:border-box}body{margin:0;font:16px/1.5 system-ui,Segoe UI,Roboto;color:var(--ink);background:var(--bg)}
+.wrap{max-width:960px;margin:0 auto;padding:28px}h1{margin:0 0 16px;font-size:clamp(1.6rem,3.8vw,2.4rem)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px}
+label{display:block;margin:10px 0 6px;color:var(--muted)}
+input,select{width:100%;padding:12px;border-radius:10px;border:1px solid var(--border);background:var(--field);color:var(--ink)}
+.row{display:grid;gap:14px;grid-template-columns:1fr 1fr}@media(max-width:760px){.row{grid-template-columns:1fr}}
+.btn{display:inline-block;text-decoration:none;text-align:center;padding:12px 18px;border-radius:12px;border:1px solid var(--border);font-weight:800;cursor:pointer}
+.btn:hover{filter:brightness(1.05)} .btn-green{background:var(--green);color:#04150b}
+.out{margin-top:16px}
+table{width:100%;border-collapse:collapse;margin-top:10px}
+th,td{padding:10px;border-bottom:1px solid #233045;text-align:left}
+tfoot td{font-weight:700}.good{color:var(--green)}.bad{color:var(--bad)}
+.back{display:inline-block;margin-top:20px;color:#93c5fd;text-decoration:none}.back:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>📒 Statymų istorija</h1>
+
+  <div class="card">
+    <div class="row">
+      <div><label>Data</label><input id="dt" type="date"></div>
+      <div><label>Įvykis</label><input id="ev" placeholder="pvz.: Barca–Real (kortelės)"></div>
+    </div>
+    <div class="row">
+      <div><label>Koeficientas</label><input id="odds" type="number" placeholder="1.90"></div>
+      <div><label>Suma (€)</label><input id="stake" type="number" placeholder="10"></div>
+    </div>
+    <label>Rezultatas</label>
+    <select id="res"><option value="win">Laimėjo</option><option value="lose">Pralaimėjo</option><option value="push">Push/Anuliuota</option></select>
+    <div class="out">
+      <button class="btn btn-green" onclick="add()">➕ Pridėti</button>
+      <button class="btn" onclick="wipe()">🗑️ Išvalyti viską</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <table id="tbl">
+      <thead><tr><th>Data</th><th>Įvykis</th><th>Kof.</th><th>Suma</th><th>Pelnas</th><th></th></tr></thead>
+      <tbody></tbody>
+      <tfoot>
+        <tr><td colspan="3">Iš viso</td><td id="tStake">0.00</td><td id="tProfit">0.00</td><td></td></tr>
+        <tr><td colspan="3">ROI</td><td colspan="3" id="roi">0%</td></tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <a class="back" href="index.html">← grįžti į meniu</a>
+</div>
+<script>
+const KEY='bets.v1';
+function load(){try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch{ return []}}
+function save(r){localStorage.setItem(KEY,JSON.stringify(r))}
+function money(x){return Number(x).toFixed(2)}
+function redraw(){
+  const rows=load(),tb=document.querySelector('#tbl tbody');tb.innerHTML='';
+  let stakeSum=0,profitSum=0;
+  rows.forEach((r,i)=>{
+    const profit = r.res==='win'?(r.odds-1)*r.stake : r.res==='lose' ? -r.stake : 0;
+    stakeSum+=+r.stake; profitSum+=profit;
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${r.dt||''}</td><td>${r.ev||''}</td><td>${money(r.odds)}</td><td>${money(r.stake)}</td>
+                  <td class="${profit>=0?'good':'bad'}">${money(profit)}</td>
+                  <td><button class="btn" onclick="del(${i})">✖</button></td>`;
+    tb.appendChild(tr);
+  });
+  tStake.textContent=money(stakeSum); tProfit.textContent=money(profitSum);
+  roi.textContent = stakeSum>0 ? (profitSum/stakeSum*100).toFixed(2)+'%' : '0%';
+}
+function add(){
+  const r={dt:dt.value,ev:ev.value,odds:+odds.value,stake:+stake.value,res:res.value};
+  if(!(r.odds>1 && r.stake>0)){alert('Patikrink kof. ir sumą');return}
+  const rows=load(); rows.unshift(r); save(rows); redraw(); ev.value=''; stake.value='';
+}
+function del(i){const rows=load(); rows.splice(i,1); save(rows); redraw()}
+function wipe(){ if(confirm('Tikrai išvalyti VISKĄ?')){localStorage.removeItem(KEY); redraw()} }
+redraw();
+</script>
+</body>
+</html>
