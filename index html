@@ -2,60 +2,64 @@
 <html lang="lt">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Supermazylis-lab</title>
   <style>
-    :root{
-      --bg:#0b0f16; --card:#121826; --ink:#e6edf3; --muted:#9fb0c3;
-      --edge:#12a98f; --bad:#e45d5d; --accent:#0ea5e9;
+    /* LABAI KONTRASTINGAS SAUGUS TEMOS VARIANTAS */
+    :root { --bg:#ffffff; --ink:#111111; --card:#f2f2f2; --accent:#0a66ff; }
+    html,body { margin:0; padding:0; background:var(--bg); color:var(--ink); font-family:system-ui, Arial, sans-serif; }
+    header { max-width:900px; margin:24px auto 8px; padding:0 16px; }
+    h1{ margin:0; font-size:2rem; color:var(--ink); }
+    p{ margin:.5rem 0 0; }
+    main{ max-width:900px; margin:12px auto 32px; padding:0 16px; display:grid; gap:16px; }
+    .card{
+      background:var(--card); border:2px solid #d0d0d0; border-radius:12px; padding:16px;
     }
-    *{box-sizing:border-box}
-    body{margin:0;font:16px/1.5 system-ui,Segoe UI,Roboto,Ubuntu;color:var(--ink);background:var(--bg)}
-    header{max-width:900px;margin:0 auto;padding:24px}
-    h1{margin:0 0 6px;font-size:clamp(1.6rem,3.5vw,2.4rem)}
-    p.lead{margin:0;color:var(--muted)}
-    main{max-width:900px;margin:0 auto;padding:24px;display:grid;grid-template-columns:1fr;gap:16px}
-    @media(min-width:740px){ main{grid-template-columns:repeat(2,1fr)} }
-    .card{background:var(--card);border:1px solid #263142;border-radius:14px;padding:18px}
-    .card h2{margin:0 0 8px;font-size:1.1rem}
-    .card p{margin:0 0 14px;color:var(--muted)}
-    .btn{display:inline-block;text-decoration:none;padding:10px 14px;border-radius:10px;border:1px solid #294255}
-    .btn:hover{filter:brightness(1.12)}
-    .good{background:#0f766e;border-color:#0f766e}
-    .mid{background:#0b6fbf;border-color:#0b6fbf}
-    .warn{background:#6b7280;border-color:#6b7280}
-    footer{max-width:900px;margin:20px auto 40px;color:var(--muted);padding:0 24px}
+    .btn{
+      display:inline-block; margin-top:8px; padding:10px 14px; border:2px solid var(--accent);
+      text-decoration:none; font-weight:700; border-radius:8px; color:var(--accent);
+      background:#fff;
+    }
+    .btn:active, .btn:hover{ background:var(--accent); color:#fff; }
+    footer{ max-width:900px; margin:16px auto; padding:0 16px; color:#555; }
   </style>
 </head>
 <body>
   <header>
-    <h1>🎯 Supermazylis-lab</h1>
-    <p class="lead">Greiti įrankiai: koef. → tikimybės, rizika, kelių atrankų „multiple“.</p>
+    <h1>🧮 Supermazylis-lab</h1>
+    <p>Greiti įrankiai: konverteris, rizika, multiple.</p>
   </header>
 
   <main>
     <section class="card">
-      <h2>Greitas konverteris</h2>
-      <p>Įvesk koeficientus, gauk implied %, „fair“ koef., VALUE žymą.</p>
-      <a class="btn good" href="prob.html">Atidaryti prob.html</a>
+      <h2>🎯 Greitas konverteris</h2>
+      <p>Implied %, „fair“ koef., VALUE.</p>
+      <a class="btn" href="prob.html">Atidaryti prob.html</a>
     </section>
 
     <section class="card">
-      <h2>Rizikos modulis</h2>
-      <p>Kelly (pilnas/½/¼), bankrolo dalis, „statyti / nestatyti“, „laimės / nelaimės“ tekstas.</p>
-      <a class="btn mid" href="risk.html">Atidaryti risk.html</a>
+      <h2>⚖️ Rizikos modulis</h2>
+      <p>Kelly, statyti/nestatyti, „laimės / nelaimės“.</p>
+      <a class="btn" href="risk.html">Atidaryti risk.html</a>
     </section>
 
     <section class="card">
-      <h2>Multiple (kombinuotas)</h2>
-      <p>2–5 atrankos: jungtinis koef., bendra p, EV, Kelly, sprendimas.</p>
-      <a class="btn warn" href="multiple.html">Atidaryti multiple.html</a>
+      <h2>➕ Multiple modulis</h2>
+      <p>2–5 koefai + p → jungtinis EV/ Kelly / sprendimas.</p>
+      <a class="btn" href="multiple.html">Atidaryti multiple.html</a>
+    </section>
+
+    <!-- Paprastas nuorodų sąrašas – net jei viskas „užsistailins“, šitos bus matomos -->
+    <section class="card">
+      <h3>Greitos nuorodos (fallback)</h3>
+      <ul>
+        <li><a href="prob.html">prob.html</a></li>
+        <li><a href="risk.html">risk.html</a></li>
+        <li><a href="multiple.html">multiple.html</a></li>
+      </ul>
     </section>
   </main>
 
-  <footer>
-    <small>Jei puslapis neatsinaujina, pabandyk „Hard refresh“: mobiliajame – 
-      per naršyklės meniu „Reload/Refresh“ (arba uždaryk/atidaryk kortelę iš naujo).</small>
-  </footer>
+  <footer>© Supermazylis-lab</footer>
 </body>
 </html>
