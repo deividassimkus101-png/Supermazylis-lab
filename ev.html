@@ -15,11 +15,15 @@ input{width:100%;padding:12px;border-radius:10px;border:1px solid var(--border);
 .btn:hover{filter:brightness(1.05)} .btn-blue{background:var(--blue);color:#061325}
 .out{margin-top:16px;padding:14px;border-radius:12px;background:var(--field);border:1px dashed var(--border)}
 .good{color:var(--green)} .bad{color:var(--bad)} .back{display:inline-block;margin-top:20px;color:#93c5fd;text-decoration:none}.back:hover{text-decoration:underline}
+textarea{width:100%;padding:12px;border-radius:10px;border:1px solid var(--border);background:var(--field);color:var(--ink);resize:vertical}
+h3{margin:0 0 8px;color:var(--muted);font-weight:700}
 </style>
 </head>
 <body>
 <div class="wrap">
   <h1>📈 EV / ROI skaičiuotuvas</h1>
+
+  <!-- Pagrindinis EV/ROI skaičiavimas -->
   <div class="card">
     <div class="row">
       <div><label>Tavo tikimybė %</label><input id="p" type="number" placeholder="pvz.: 56"></div>
@@ -32,17 +36,64 @@ input{width:100%;padding:12px;border-radius:10px;border:1px solid var(--border);
     <button class="btn btn-blue" onclick="calc()">Skaičiuoti</button>
     <div id="out" class="out"></div>
   </div>
+
+  <!-- Nauja: Palyginti kelias kontoras ir parinkti geriausią koefą -->
+  <div class="card" style="margin-top:14px">
+    <h3>📊 Palyginti kelias kontoras</h3>
+    <label>Įklijuok po vieną eilutę: <i>Kontora, koefas</i></label>
+    <textarea id="many" rows="6" placeholder="Unibet, 1.92
+Bet365, 1.95
+Pinnacle, 1.91"></textarea>
+    <button class="btn btn-blue" onclick="bestLine()">Rinkti geriausią</button>
+    <div id="outBest" class="out"></div>
+  </div>
+
   <a class="back" href="index.html">← grįžti į meniu</a>
 </div>
+
 <script>
 const pEl=document.getElementById('p'),oEl=document.getElementById('o'),sEl=document.getElementById('s'),out=document.getElementById('out'),showFair=document.getElementById('showFair');
+
 function f(x,n=2){return Number.isFinite(x)?(+x).toFixed(n):'-'}
+
 function calc(){
   const p=parseFloat(pEl.value)/100,o=parseFloat(oEl.value),s=parseFloat(sEl.value||0);
   if(!(p>0&&p<1&&o>1)){out.innerHTML='Įvesk teisingus duomenis.';return}
   const win=(o-1)*s, EV=p*win+(1-p)*(-s), ROI=EV/Math.max(s,1)*100, fair=1/p, impl=1/o*100;
   const dec=EV>0?`<b class="good">+EV – verta svarstyti</b>`:`<b class="bad">-EV – vengti</b>`;
-  out.innerHTML=`EV: <b>${f(EV)} €</b> · ROI: <b>${f(ROI)}%</b><br>Tavo implied: ${f(100*p)}% · Kof. implied: ${f(impl)}%<br>${showFair.checked?`„Fair“ ≈ <b>${f(fair,3)}</b><br>`:''}Sprendimas: ${dec}`;
+  out.innerHTML=`EV: <b>${f(EV)} €</b> · ROI: <b>${f(ROI)}%</b><br>
+                 Tavo implied: ${f(100*p)}% · Kof. implied: ${f(impl)}%<br>
+                 ${showFair.checked?`„Fair“ ≈ <b>${f(fair,3)}</b><br>`:''}
+                 Sprendimas: ${dec}`;
+}
+
+/* Nauja: geriausios „linijos“ (koeficiento) paieška iš kelių kontorų */
+function bestLine(){
+  const raw = (document.getElementById('many').value||'').trim();
+  if(!raw){ outBest.innerHTML='Įklijuok bent vieną eilutę.'; return; }
+  const rows = raw.split('\n')
+                  .map(l=>l.split(',').map(x=>x.trim()))
+                  .filter(a=>a.length>=2);
+  const data = rows.map(([name,od])=>({name,od:+od})).filter(r=>r.od>1);
+  if(!data.length){ outBest.innerHTML='Nerasta tinkamų koefų (naudok: „Kontora, 1.95“).'; return; }
+
+  // Surikiuojam pagal koefą mažėjančiai ir imam geriausią
+  data.sort((a,b)=>b.od-a.od);
+  const best = data[0];
+
+  // Jei įvesti p ir s – parodome EV/ROI su geriausiu koefu
+  const p = parseFloat(pEl.value)/100;
+  const s = parseFloat(sEl.value||0);
+  if(!(p>0 && p<1 && s>0)){
+    outBest.innerHTML = `Geriausias koef.: <b>${best.name}</b> – <b>${best.od}</b><br>
+                         (Norėdamas gauti EV/ROI, viršuje įvesk savo tikimybę ir sumą.)`;
+    return;
+  }
+
+  const EV = p*(best.od-1)*s + (1-p)*(-s);
+  const ROI = EV/Math.max(s,1)*100;
+  outBest.innerHTML = `Geriausias koef.: <b>${best.name}</b> – <b>${best.od}</b><br>
+                       EV: <b>${EV.toFixed(2)} €</b> · ROI: <b>${ROI.toFixed(2)}%</b>`;
 }
 </script>
 </body>
