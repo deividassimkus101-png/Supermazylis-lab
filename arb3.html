@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>3-baigčių arbitražas (1X2)</title>
+<style>
+:root{--bg:#0d1117;--ink:#e6edf3;--muted:#9fb0c3;--card:#161b22;--field:#0f1620;--border:#263142;--blue:#3b82f6;--green:#22c55e;--orange:#f97316;--bad:#ef4444}
+*{box-sizing:border-box}body{margin:0;font:16px/1.5 system-ui,Segoe UI,Roboto;color:var(--ink);background:var(--bg)}
+.wrap{max-width:860px;margin:0 auto;padding:28px}
+h1{margin:0 0 16px;font-size:clamp(1.6rem,3.8vw,2.4rem)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px}
+label{display:block;margin:12px 0 6px;color:var(--muted)}
+input,textarea{width:100%;padding:12px;border-radius:10px;border:1px solid var(--border);background:var(--field);color:var(--ink)}
+.row{display:grid;gap:14px;grid-template-columns:1fr 1fr}@media(max-width:760px){.row{grid-template-columns:1fr}}
+.btn{display:inline-block;text-decoration:none;text-align:center;padding:12px 18px;border-radius:12px;border:1px solid var(--border);font-weight:800;cursor:pointer}
+.btn:hover{filter:brightness(1.05)} .btn-blue{background:var(--blue);color:#061325}
+.out{margin-top:16px;padding:14px;border-radius:12px;background:var(--field);border:1px dashed var(--border)}
+.good{color:var(--green)} .bad{color:var(--bad)}
+.back{display:inline-block;margin-top:20px;color:#93c5fd;text-decoration:none}.back:hover{text-decoration:underline}
+h3{margin:0 0 8px;color:var(--muted);font-weight:700}
+small{color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>⚽ 3-baigčių arbitražas (1X2)</h1>
+
+  <!-- Pagrindinis 1X2 arbitražas -->
+  <div class="card">
+    <div class="row">
+      <div><label>1 (namai) koef.</label><input id="o1" type="number" placeholder="pvz.: 2.60"></div>
+      <div><label>X (lygiosios) koef.</label><input id="ox" type="number" placeholder="pvz.: 3.30"></div>
+    </div>
+    <div class="row">
+      <div><label>2 (svečiai) koef.</label><input id="o2" type="number" placeholder="pvz.: 2.90"></div>
+      <div><label>Bendras bankas (€)</label><input id="bank" type="number" placeholder="pvz.: 100"></div>
+    </div>
+    <button class="btn btn-blue" onclick="arb3()">Skaičiuoti</button>
+    <div id="out" class="out"></div>
+    <small>Arbitražas yra, jei 1/o1 + 1/ox + 1/o2 < 1.00</small>
+  </div>
+
+  <!-- Pasirinktinai: surink geriausius koefus iš kelių kontorų kiekvienai baigčiai -->
+  <div class="card" style="margin-top:14px">
+    <h3>📊 Palyginti kelias kontoras kiekvienai baigčiai</h3>
+    <label>1 (namai): „Kontora, koef.“ po vieną eilutę</label>
+    <textarea id="list1" rows="3" placeholder="Unibet, 2.58
+Bet365, 2.62
+Pinnacle, 2.60"></textarea>
+
+    <label>X (lygiosios): „Kontora, koef.“</label>
+    <textarea id="listX" rows="3" placeholder="Unibet, 3.25
+Bet365, 3.35
+Pinnacle, 3.30"></textarea>
+
+    <label>2 (svečiai): „Kontora, koef.“</label>
+    <textarea id="list2" rows="3" placeholder="Unibet, 2.88
+Bet365, 2.95
+Pinnacle, 2.90"></textarea>
+
+    <button class="btn btn-blue" onclick="bestOfThree()">Rinkti geriausius ir tikrinti arbitražą</button>
+    <div id="outBest" class="out"></div>
+  </div>
+
+  <a class="back" href="index.html">← grįžti į meniu</a>
+</div>
+
+<script>
+function f(x,n=2){return Number.isFinite(x)?(+x).toFixed(n):'-'}
+
+function arb3(){
+  const o1=+document.getElementById('o1').value,
+        ox=+document.getElementById('ox').value,
+        o2=+document.getElementById('o2').value,
+        B =+document.getElementById('bank').value||0,
+        out=document.getElementById('out');
+  if(!(o1>1&&ox>1&&o2>1&&B>0)){out.innerHTML='Įvesk visus koeficientus ir banką.';return}
+  const S = 1/o1 + 1/ox + 1/o2;
+  if(S>=1){ out.innerHTML = `Σ(1/koef) = <b>${f(S,4)}</b> → <b class="bad">Nėra arbitražo</b>`; return; }
+
+  // Optimalus paskirstymas proporcingai 1/koeficientui
+  const s1 = B*(1/o1)/S, sX = B*(1/ox)/S, s2 = B*(1/o2)/S;
+  const garant = B/S;
+  const profit = garant - B;
+  out.innerHTML = `Σ(1/koef) = <b>${f(S,4)}</b> → <b class="good">YRA arbitražas</b><br>
+                   Statyk: 1 – <b>${f(s1)}</b>€, X – <b>${f(sX)}</b>€, 2 – <b>${f(s2)}</b>€<br>
+                   Garant. grąža: <b>${f(garant)}</b>€ · Pelnas: <b class="good">${f(profit)}</b>€ (${f((1/S-1)*100)}%)`;
+}
+
+function parseList(text){
+  return (text||'').trim().split('\n')
+    .map(l=>l.split(',').map(x=>x.trim()))
+    .filter(a=>a.length>=2)
+    .map(([name,od])=>({name,od:+od}))
+    .filter(r=>r.od>1);
+}
+
+function bestOfThree(){
+  const L1=parseList(document.getElementById('list1').value);
+  const LX=parseList(document.getElementById('listX').value);
+  const L2=parseList(document.getElementById('list2').value);
+  const out=document.getElementById('outBest');
+  if(!L1.length||!LX.length||!L2.length){ out.innerHTML='Įklijuok bent po vieną koefą kiekvienai baigčiai.'; return; }
+
+  // po vieną geriausią kiekvienai baigčiai
+  L1.sort((a,b)=>b.od-a.od); LX.sort((a,b)=>b.od-a.od); L2.sort((a,b)=>b.od-a.od);
+  const b1=L1[0], bX=LX[0], b2=L2[0];
+
+  const S = 1/b1.od + 1/bX.od + 1/b2.od;
+  let html = `Geriausi koefai: 1 – <b>${b1.name}</b> ${b1.od}, X – <b>${bX.name}</b> ${bX.od}, 2 – <b>${b2.name}</b> ${b2.od}<br>
+              Σ(1/koef) = <b>${f(S,4)}</b> → `;
+  if(S<1){
+    html += `<span class="good">YRA arbitražas</span><br>
+             Įvesk banką viršuje ir paspausk „Skaičiuoti“, kad gautum paskirstymą.`;
+  } else {
+    html += `<span class="bad">Nėra arbitražo</span>`;
+  }
+  out.innerHTML = html;
+}
+</script>
+</body>
+      </html>
