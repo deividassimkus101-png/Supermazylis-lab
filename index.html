@@ -1,39 +1,42 @@
 <!DOCTYPE html>
 <html lang="lt">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Mažylio meniu</title>
-<style>
-:root{
-  --bg:#0d1117;--ink:#e6edf3;--muted:#9fb0c3;
-  --card:#161b22;--border:#263142;--field:#0f1620;
-  --blue:#3b82f6;--green:#22c55e;--orange:#f97316
-}
-*{box-sizing:border-box}
-body{margin:0;font:16px/1.5 system-ui,Segoe UI,Roboto;color:var(--ink);background:var(--bg)}
-.wrap{max-width:720px;margin:0 auto;padding:40px;text-align:center}
-h1{margin:0 0 20px;font-size:clamp(1.8rem,4vw,2.6rem)}
-.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px}
-.btn{
-  display:block;margin:10px auto;padding:14px 20px;
-  border-radius:12px;border:1px solid var(--border);
-  background:var(--blue);color:#061325;font-weight:700;
-  text-decoration:none;max-width:320px
-}
-.btn:hover{filter:brightness(1.07)}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mažylio meniu</title>
+  <style>
+    :root{
+      --bg:#0d1117; --panel:#111827; --ink:#e5e7eb;
+      --blue:#2563eb; --green:#16a34a; --orange:#f97316; --teal:#0891b2;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,Segoe UI,Roboto,Ubuntu}
+    .wrap{max-width:720px;margin:32px auto;padding:0 18px}
+    h1{margin:0 0 24px;font-size:clamp(1.8rem,3.5vw,2.4rem)}
+    .panel{background:var(--panel);border-radius:18px;padding:28px;box-shadow:0 10px 30px #0004}
+    .btn{display:block;width:100%;margin:14px 0;padding:18px 22px;border-radius:14px;
+         text-decoration:none;color:#fff;font-weight:700;text-align:left;transition:.15s transform}
+    .btn:active{transform:scale(.99)}
+    .b-blue{background:var(--blue)} .b-green{background:var(--green)}
+    .b-orange{background:var(--orange)} .b-teal{background:var(--teal)}
+    .foot{margin:18px 0 6px;text-align:center;opacity:.85}
+    .foot a{color:#9bd5ff;text-decoration:none}
+  </style>
 </head>
 <body>
-<div class="wrap">
-  <h1>📊 Mažylio meniu</h1>
-  <div class="card">
-    <a class="btn" href="ev.html">📈 EV / ROI skaičiuotuvas</a>
-    <a class="btn" href="arb.html">🧮 2-baigčių arbitražas</a>
-    <a class="btn" href="arb3.html">⚽ 3-baigčių arbitražas</a>
-    <a class="btn" href="risk.html">⚠️ Rizikos valdymas</a>
-    <a class="btn" href="prob.html">🎲 Tikimybių skaičiuotuvas</a>
+  <div class="wrap">
+    <h1>📊 Mažylio meniu</h1>
+    <div class="panel">
+      <a class="btn b-blue"   href="ev.html">📈 EV / ROI skaičiuotuvas</a>
+      <a class="btn b-orange" href="arb2.html">🧮 2-baigčių arbitražas</a>
+      <a class="btn b-blue"   href="arb3.html">⚽ 3-baigčių arbitražas</a>
+      <a class="btn b-green"  href="risk.html">⚠️ Rizikos valdymas</a>
+      <a class="btn b-teal"   href="prob.html">🎲 Tikimybių skaičiuotuvas</a>
+    </div>
+
+    <p class="foot">
+      Nori visko atskirai? 👉 <a href="advanced.html">Išplėstiniai įrankiai</a>
+    </p>
   </div>
-</div>
 </body>
 </html>
