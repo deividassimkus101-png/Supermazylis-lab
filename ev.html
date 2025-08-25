@@ -1,100 +1,84 @@
 <!DOCTYPE html>
 <html lang="lt">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>EV / ROI skaičiuotuvas</title>
-<style>
-:root{--bg:#0d1117;--ink:#e6edf3;--muted:#9fb0c3;--card:#161b22;--field:#0f1620;--border:#263142;--blue:#3b82f6;--green:#22c55e;--orange:#f97316;--cyan:#06b6d4;--bad:#ef4444}
-*{box-sizing:border-box}body{margin:0;font:16px/1.5 system-ui,Segoe UI,Roboto;color:var(--ink);background:var(--bg)}
-.wrap{max-width:860px;margin:0 auto;padding:28px}h1{margin:0 0 16px;font-size:clamp(1.6rem,3.8vw,2.4rem)}
-.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px}
-label{display:block;margin:12px 0 6px;color:var(--muted)}
-input{width:100%;padding:12px;border-radius:10px;border:1px solid var(--border);background:var(--field);color:var(--ink)}
-.row{display:grid;gap:14px;grid-template-columns:1fr 1fr}@media(max-width:760px){.row{grid-template-columns:1fr}}
-.btn{display:inline-block;text-decoration:none;text-align:center;padding:12px 18px;border-radius:12px;border:1px solid var(--border);font-weight:800;cursor:pointer}
-.btn:hover{filter:brightness(1.05)} .btn-blue{background:var(--blue);color:#061325}
-.out{margin-top:16px;padding:14px;border-radius:12px;background:var(--field);border:1px dashed var(--border)}
-.good{color:var(--green)} .bad{color:var(--bad)} .back{display:inline-block;margin-top:20px;color:#93c5fd;text-decoration:none}.back:hover{text-decoration:underline}
-textarea{width:100%;padding:12px;border-radius:10px;border:1px solid var(--border);background:var(--field);color:var(--ink);resize:vertical}
-h3{margin:0 0 8px;color:var(--muted);font-weight:700}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EV / ROI skaičiuotuvas</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<div class="wrap">
-  <h1>📈 EV / ROI skaičiuotuvas</h1>
+  <div class="container">
+    <h1>📊 EV / ROI skaičiuotuvas</h1>
 
-  <!-- Pagrindinis EV/ROI skaičiavimas -->
-  <div class="card">
-    <div class="row">
-      <div><label>Tavo tikimybė %</label><input id="p" type="number" placeholder="pvz.: 56"></div>
-      <div><label>Koeficientas</label><input id="o" type="number" placeholder="pvz.: 1.83"></div>
+    <!-- Greitas įklijavimas -->
+    <div class="card" style="margin-bottom:16px">
+      <label for="paste" class="lbl">Greitas įklijavimas</label>
+      <textarea id="paste" rows="3" placeholder="pvz.: Komanda A @1.92, Komanda B @2.05; tikimybės 54% ir 46%"></textarea>
+      <button class="btn btn-blue" type="button" onclick="quickParse()">Ištraukti skaičius</button>
+      <small>Automatiškai suras koeficientus ir tikimybes iš įklijuoto teksto.</small>
     </div>
-    <div class="row">
-      <div><label>Suma (€)</label><input id="s" type="number" placeholder="pvz.: 20"></div>
-      <div><label>Rodyti „fair“ koef.</label><input id="showFair" type="checkbox"></div>
+
+    <!-- Įprasta forma -->
+    <div class="card">
+      <label class="lbl">Koeficientai</label>
+      <input id="odds" type="text" placeholder="pvz.: 1.85, 2.10, 3.20">
+
+      <label class="lbl">Tikimybės (%)</label>
+      <input id="probs" type="text" placeholder="pvz.: 55, 45">
+
+      <label class="lbl">Bankrolas (€)</label>
+      <input id="bank" type="number" value="100">
+
+      <button class="btn btn-green" onclick="calc()">Skaičiuoti</button>
     </div>
-    <button class="btn btn-blue" onclick="calc()">Skaičiuoti</button>
-    <div id="out" class="out"></div>
+
+    <div id="result" class="result"></div>
   </div>
 
-  <!-- Nauja: Palyginti kelias kontoras ir parinkti geriausią koefą -->
-  <div class="card" style="margin-top:14px">
-    <h3>📊 Palyginti kelias kontoras</h3>
-    <label>Įklijuok po vieną eilutę: <i>Kontora, koefas</i></label>
-    <textarea id="many" rows="6" placeholder="Unibet, 1.92
-Bet365, 1.95
-Pinnacle, 1.91"></textarea>
-    <button class="btn btn-blue" onclick="bestLine()">Rinkti geriausią</button>
-    <div id="outBest" class="out"></div>
-  </div>
+  <script>
+  function quickParse(){
+    const t = document.getElementById('paste').value;
+    const percents = [];
+    const odds = [];
 
-  <a class="back" href="index.html">← grįžti į meniu</a>
-</div>
+    // randa % reikšmes
+    (t.match(/(\d+[.,]?\d*)\s*%/g) || []).forEach(s=>{
+      percents.push(parseFloat(s.replace('%','').replace(',','.')));
+    });
 
-<script>
-const pEl=document.getElementById('p'),oEl=document.getElementById('o'),sEl=document.getElementById('s'),out=document.getElementById('out'),showFair=document.getElementById('showFair');
+    // randa skaičius be %
+    (t.match(/(\d+[.,]?\d*)/g) || []).forEach(s=>{
+      if(!s.includes('%')) odds.push(parseFloat(s.replace(',','.')));
+    });
 
-function f(x,n=2){return Number.isFinite(x)?(+x).toFixed(n):'-'}
+    // įrašo į laukus
+    if(odds.length) document.getElementById('odds').value = odds.join(', ');
+    if(percents.length) document.getElementById('probs').value = percents.join(', ');
 
-function calc(){
-  const p=parseFloat(pEl.value)/100,o=parseFloat(oEl.value),s=parseFloat(sEl.value||0);
-  if(!(p>0&&p<1&&o>1)){out.innerHTML='Įvesk teisingus duomenis.';return}
-  const win=(o-1)*s, EV=p*win+(1-p)*(-s), ROI=EV/Math.max(s,1)*100, fair=1/p, impl=1/o*100;
-  const dec=EV>0?`<b class="good">+EV – verta svarstyti</b>`:`<b class="bad">-EV – vengti</b>`;
-  out.innerHTML=`EV: <b>${f(EV)} €</b> · ROI: <b>${f(ROI)}%</b><br>
-                 Tavo implied: ${f(100*p)}% · Kof. implied: ${f(impl)}%<br>
-                 ${showFair.checked?`„Fair“ ≈ <b>${f(fair,3)}</b><br>`:''}
-                 Sprendimas: ${dec}`;
-}
-
-/* Nauja: geriausios „linijos“ (koeficiento) paieška iš kelių kontorų */
-function bestLine(){
-  const raw = (document.getElementById('many').value||'').trim();
-  if(!raw){ outBest.innerHTML='Įklijuok bent vieną eilutę.'; return; }
-  const rows = raw.split('\n')
-                  .map(l=>l.split(',').map(x=>x.trim()))
-                  .filter(a=>a.length>=2);
-  const data = rows.map(([name,od])=>({name,od:+od})).filter(r=>r.od>1);
-  if(!data.length){ outBest.innerHTML='Nerasta tinkamų koefų (naudok: „Kontora, 1.95“).'; return; }
-
-  // Surikiuojam pagal koefą mažėjančiai ir imam geriausią
-  data.sort((a,b)=>b.od-a.od);
-  const best = data[0];
-
-  // Jei įvesti p ir s – parodome EV/ROI su geriausiu koefu
-  const p = parseFloat(pEl.value)/100;
-  const s = parseFloat(sEl.value||0);
-  if(!(p>0 && p<1 && s>0)){
-    outBest.innerHTML = `Geriausias koef.: <b>${best.name}</b> – <b>${best.od}</b><br>
-                         (Norėdamas gauti EV/ROI, viršuje įvesk savo tikimybę ir sumą.)`;
-    return;
+    alert(`Rasta: koef.= [${odds.join(', ')}] | tikimybės= [${percents.join(', ')}]%`);
   }
 
-  const EV = p*(best.od-1)*s + (1-p)*(-s);
-  const ROI = EV/Math.max(s,1)*100;
-  outBest.innerHTML = `Geriausias koef.: <b>${best.name}</b> – <b>${best.od}</b><br>
-                       EV: <b>${EV.toFixed(2)} €</b> · ROI: <b>${ROI.toFixed(2)}%</b>`;
-}
-</script>
+  function calc(){
+    const odds = document.getElementById('odds').value.split(',').map(x=>parseFloat(x.trim()));
+    const probs = document.getElementById('probs').value.split(',').map(x=>parseFloat(x.trim())/100);
+    const bank = parseFloat(document.getElementById('bank').value);
+
+    if(odds.length !== probs.length){
+      document.getElementById('result').innerText = "❌ Kiekiai nesutampa!";
+      return;
+    }
+
+    let ev = 0;
+    for(let i=0;i<odds.length;i++){
+      ev += probs[i]*odds[i];
+    }
+    ev -= 1;
+
+    document.getElementById('result').innerHTML = `
+      <p>📈 Tikėtina grąža (EV): ${(ev*100).toFixed(2)}%</p>
+      <p>💰 Bankrolas: €${bank.toFixed(2)}</p>
+    `;
+  }
+  </script>
 </body>
 </html>
