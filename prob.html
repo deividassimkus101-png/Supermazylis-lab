@@ -3,75 +3,164 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Greitas konverteris</title>
+<title>🎯 Greitas konverteris + Mano tikimybės</title>
 <style>
-:root{
-  --bg:#0b0f16; --card:#121826; --muted:#0f1b2c;
-  --ink:#e2e8f0; --sub:#94a3b8; --accent:#10b981; --warn:#f59e0b; --bad:#ef4444;
-}
-*{box-sizing:border-box}
-body{margin:0;padding:24px;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,Segoe UI,Roboto,Ubuntu}
-h1{margin:0 0 16px;font-size:clamp(1.6rem,3.5vw,2.2rem)}
-.lead{color:var(--sub);margin:0 0 24px}
-.card{max-width:900px;margin:0 auto;background:var(--card);border:1px solid #263142;border-radius:14px;padding:18px}
-input,button{width:100%;padding:14px 16px;border-radius:10px;border:1px solid #2a3a55;background:#0e1624;color:var(--ink);font-size:16px}
-button{background:#22c55e;border-color:#22c55e;font-weight:600;cursor:pointer}
-button:hover{filter:brightness(1.03)}
-.out{margin-top:16px;border:1px dashed #2a3a55;border-radius:10px;padding:12px;white-space:pre-wrap}
-.bad{color:var(--bad)} .good{color:#22c55e} .warn{color:var(--warn)}
-a{color:#93c5fd}
-footer{max-width:900px;margin:24px auto 0;color:var(--sub);text-align:center}
+  :root{
+    --bg:#0d1117;--card:#141a22;--ink:#e6edf3;--muted:#9fb0c3;--accent:#22c55e;
+    --bad:#ef4444;--mid:#f59e0b;--btn:#3b82f6;--chip:#111827;--chipbd:#303a46;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,Segoe UI,Roboto,Ubuntu}
+  .wrap{max-width:820px;margin:auto;padding:24px}
+  h1{margin:0 0 18px;font-size:clamp(1.6rem,3vw,2.3rem)}
+  .lead{color:var(--muted);margin:0 0 20px}
+  .card{background:var(--card);border:1px solid #26313f;border-radius:18px;padding:18px;margin:16px 0}
+  label{display:block;margin:10px 0 6px;color:var(--muted)}
+  input,select{width:100%;padding:14px 12px;border-radius:12px;border:1px solid #2a3441;background:#0b1220;color:var(--ink)}
+  .btn{display:inline-block;background:var(--accent);color:#04130a;text-decoration:none;border:none;border-radius:14px;padding:14px 18px;font-weight:700}
+  .btn:active{transform:translateY(1px)}
+  .hint{font-size:13px;color:var(--muted);margin-top:6px}
+  .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:var(--chip);border:1px solid var(--chipbd);font-size:13px;margin:4px 6px 0 0}
+  .row{display:grid;gap:14px}
+  @media(min-width:720px){.row{grid-template-columns:1fr 1fr}}
+  .ok{color:#22c55e}.no{color:var(--bad)}.mid{color:var(--mid)}
+  .out{white-space:pre-line}
+  .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  footer{margin:32px 0 8px;color:var(--muted);text-align:center}
+  a{color:#93c5fd}
 </style>
 </head>
 <body>
-  <h1>🎯 Greitas konverteris</h1>
-  <p class="lead">Įvesk <b>koeficientus</b> (kableliais), gausi <b>implied%</b>, <b>fair</b> koef. ir aiškų sprendimą.</p>
+  <div class="wrap">
+    <h1>🎯 Greitas konverteris</h1>
+    <p class="lead">Įvesk <b>koeficientus</b> (kableliais) ir, jei nori, <b>tavo tikimybes %</b> ta pačia tvarka.
+      Gausi implied%, fair koef., EV ir aiškų <b>„Statyti / Nestatyti“</b>. </p>
 
-  <div class="card">
-    <label for="odds">Koeficientai (pvz.: 1.83, 3.40, 4.20)</label>
-    <input id="odds" placeholder="1.83, 3.40, 4.20">
-    <div style="height:10px"></div>
-    <button onclick="calc()">Skaičiuoti</button>
-    <div id="out" class="out"></div>
+    <div class="card">
+      <label>Koeficientai (pvz.: 1.83, 3.40, 4.20)</label>
+      <input id="odds" placeholder="1.68, 3.60, 5.50">
+
+      <label style="margin-top:14px;">Mano tikimybės % (neprivaloma; pvz.: 58, 27, 15)</label>
+      <input id="myps" placeholder="(pasirinktinai) 58, 27, 15">
+      <div class="hint">Jei įvesi – skaičiuos pagal tavo tikimybes. Jei ne – pagal rinkos implied (normalizuotas).</div>
+
+      <div class="row" style="margin-top:14px">
+        <div>
+          <label>Bankrolas (€)</label>
+          <input id="bank" type="number" min="0" value="100">
+        </div>
+        <div>
+          <label>Kelly apimtis</label>
+          <select id="kellyPart">
+            <option value="0.25">25% Kelly</option>
+            <option value="0.5" selected>50% Kelly</option>
+            <option value="1">100% Kelly</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="margin-top:16px">
+        <button class="btn" onclick="calc()">Skaičiuoti</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div id="meta" class="mono"></div>
+      <div id="out" class="out mono" style="margin-top:10px"></div>
+    </div>
+
+    <footer>© Supermažylis • <a href="index.html">grįžti į meniu</a></footer>
   </div>
 
-  <footer>© Supermažylis • <a href="index.html">grįžti į meniu</a></footer>
-
 <script>
+function parseList(str){
+  if(!str) return [];
+  return str.split(",").map(s=>parseFloat(s.trim().replace(",", "."))).filter(x=>!Number.isNaN(x) && x>0);
+}
+
+function kellyFraction(p, b){
+  // b = (odds - 1)
+  const q = 1 - p;
+  const f = (b*p - q) / b; // gali būti < 0
+  return f;
+}
+
+function clamp(x, a, b){ return Math.max(a, Math.min(b, x)); }
+
 function calc(){
-  const raw = document.getElementById('odds').value.trim();
-  if(!raw){document.getElementById('out').textContent='Įvesk bent vieną koeficientą.';return;}
-  const odds = raw.split(',').map(x=>parseFloat(x.trim())).filter(x=>x>1);
-  if(!odds.length){document.getElementById('out').textContent='Neteisingas formatas.';return;}
+  const odds = parseList(document.getElementById("odds").value);
+  const mypsRaw = parseList(document.getElementById("myps").value);
+  const bank = parseFloat(document.getElementById("bank").value || "0");
+  const kPart = parseFloat(document.getElementById("kellyPart").value || "0.5");
 
-  // overround (sum(1/o))
-  const sumInv = odds.reduce((a,o)=>a+1/o,0);
-  // jei sumInv < 1 — „value“ rinkoje (arbitražo langas)
-  const marketNote = (sumInv<1) ? '🚀 Rinka < 100% — galimas value visai kombinacijai.' :
-                     (sumInv>1) ? 'ℹ️ Rinka > 100% — yra margo (book) antkainio.' :
-                                  '✔️ Rinka ≈ 100%.';
+  const out = document.getElementById("out");
+  const meta = document.getElementById("meta");
+  out.textContent = ""; meta.textContent = "";
 
-  let out = `Rinkos marža: ${(sumInv*100).toFixed(2)}%\n${marketNote}\n\n`;
+  if(odds.length === 0){
+    out.textContent = "Įvesk bent vieną koeficientą.";
+    return;
+  }
 
-  odds.forEach((o,i)=>{
-    const implied = (100/o).toFixed(2);           // paprastas implied %
-    // „fair“ normalizuojant per sumInv (padalijam antkainį proporcingai)
-    const pRaw = 1/o;
-    const pFair = pRaw / sumInv;                   // normalizuota tikimybė
-    const fair = (1/pFair).toFixed(3);
+  // Rinkos implied (nenormalizuoti) ir overround
+  const invs = odds.map(o => 1/o);
+  const sumInv = invs.reduce((a,b)=>a+b,0);
+  const overroundPct = (sumInv*100).toFixed(2);
 
-    // sprendimai be tavo p: lyginam su fair – jei market o > fair, teoriškai „value“
-    const value = o > parseFloat(fair);
-    const statyti = value ? 'Statyti' : 'Nestatyti';
-    const laimes = value ? 'Laimės (ilguoju laikotarpiu)' : 'Nelaimės';
+  // Normalizuotos rinkos tikimybės ir „fair“ koeficientai
+  const marketP = invs.map(x => x/sumInv);
+  const fairOdds = marketP.map(p => (1/p));
 
-    out += `Koef ${o.toFixed(2)} → implied ≈ ${implied}% | fair ≈ ${fair} `
-         + (value ? `• ✅ <span class="good">${statyti}</span> • <span class="good">${laimes}</span>`
-                   : `• ❌ <span class="bad">${statyti}</span> • <span class="bad">${laimes}</span>`)
-         + `\n`;
-  });
+  // Naudosime vartotojo tikimybes, jei pateiktos tiek pat elementų, kiek koefų
+  let useUserP = (mypsRaw.length === odds.length);
+  let userP = [];
+  if(useUserP){
+    // paduotos procentais; konvertuojam į [0..1]
+    userP = mypsRaw.map(x => x/100);
+    // Galima nereikalauti sumos = 1, skaičiuojame „kaip yra“.
+  }
 
-  document.getElementById('out').innerHTML = out;
+  // Santrauka viršuje
+  const pills = [];
+  pills.push(`Rinkos marža: ${overroundPct}%`);
+  if(useUserP){
+    const sumUser = (userP.reduce((a,b)=>a+b,0)*100).toFixed(1);
+    pills.push(`Tavo P suma: ${sumUser}%`);
+  }else{
+    pills.push(`Naudojamos rinkos P (normalizuotos)`);
+  }
+  meta.innerHTML = pills.map(t=>`<span class="pill">${t}</span>`).join(" ");
+
+  // Eilučių skaičiavimas
+  const lines = [];
+  for(let i=0;i<odds.length;i++){
+    const o = odds[i];
+    const b = o - 1;
+    const p_used = useUserP ? userP[i] : marketP[i];
+
+    // EV už 1€: p*b - (1-p)*1
+    const EV1 = p_used*b - (1 - p_used);
+    // Kelly pilnas
+    let fStar = kellyFraction(p_used, b);
+    if(!isFinite(fStar)) fStar = -1;
+
+    const kellyStake = bank * kPart * clamp(fStar, 0, 1); // tik jei >0
+    const impliedPct = (p_used*100).toFixed(2);
+    const fair = (1/p_used).toFixed(3);
+    const evStr = EV1 >= 0 ? `+${EV1.toFixed(3)}` : EV1.toFixed(3);
+
+    const verdict = (EV1>0 && fStar>0) ? `<span class="ok">✅ Statyti</span>` : `<span class="no">❌ Nestatyti</span>`;
+    const kellyStr = (fStar>0) ? `${(fStar*100*kPart).toFixed(2)}% • ≈ ${kellyStake.toFixed(2)} €` : `0%`;
+
+    lines.push(
+`Koef ${o.toFixed(2)}
+→ P=${impliedPct}% | fair≈ ${fair}
+→ EV/€: ${evStr} | Kelly: ${kellyStr}
+${verdict}`
+    );
+  }
+
+  out.textContent = lines.join("\n\n");
 }
 </script>
 </body>
